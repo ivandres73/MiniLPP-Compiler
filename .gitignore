@@ -1,0 +1,5 @@
+#generated files
+build/*
+
+#file for tests
+input.txt
