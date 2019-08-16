@@ -3,3 +3,6 @@ build/*
 
 #file for tests
 input.txt
+
+#vs code dir
+.vscode/*

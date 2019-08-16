@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <cstring>
+#include <cstring> // for memmove() and memset()
+#include "Tokens.h"
 
 using std::cout;
 using std::endl;
@@ -10,35 +11,6 @@ using std::string;
 using std::ostream;
 
 #define SIZE 1024
-
-enum class Token {
-    decNum,
-    hexNum,
-    binNum,
-    Char,
-    String,
-    Iden,
-    opAdd,
-    opMul,
-    opDiv,
-    opSub,
-    Error,
-    Space,
-    opBra,
-    clBra,
-    Comma,
-    Colon,
-    opPar,
-    clPar,
-    Assign,
-    Pow,
-    leThan,
-    grThan,
-    Equal,
-    leEqu,
-    grEqu,
-    Eof
-};
 
 ostream& operator<<(ostream&, Token);
 
@@ -71,12 +43,19 @@ private:
         ~context() {
             delete[] buf;
         }
-        string tokenText() {
-            return string(tok, curs - tok);
+        string tokenText(const Token &tk) {
+            if (tk == Token::Char || tk == Token::String) { //omitting the apostrophes in chars
+                tok++;
+                curs--;
+            }
+            string str(tok, curs - tok);
+            if (tk == Token::Char || tk == Token::String)
+                curs++;
+            return str;
         }
     };
      Token makeToken(Token tk) {
-        text = ctx.tokenText();
+        text = ctx.tokenText(tk);
         return tk;
     }
     context ctx;
