@@ -2,20 +2,20 @@
 #define _TOKENS_H
 
 enum class Token {
-    decNum,
+    decNum,//basic types constants
     hexNum,
     binNum,
     Char,
     String,
     Iden,
-    opAdd,
+    opAdd,//arith operators
     opMul,
     opDiv,
     opSub,
     opMod,
     opPow,
     Error,
-    Space,
+    Space,//syntax separators
     opBra,
     clBra,
     Comma,
@@ -23,7 +23,7 @@ enum class Token {
     opPar,
     clPar,
     Assign,
-    leThan,
+    leThan,//boolean operators
     grThan,
     Equal,
     leEqu,

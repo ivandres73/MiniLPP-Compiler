@@ -16,7 +16,7 @@ ostream& operator<<(ostream&, Token);
 
 class exprLexer {
 public:
-    exprLexer(std::ifstream& in) : ctx(in), line(1){};
+    exprLexer(std::ifstream& in) : ctx(in), line(1) { }
     Token getNextToken();
     string getText() { return text; }
     
@@ -36,10 +36,10 @@ private:
         char *buf;
         char *mark;
         bool eof;
-        std::istream& in;
+        istream& in;
         fillstatus fill(size_t);
 
-        context(istream& in);
+        context(istream&);
         ~context() {
             delete[] buf;
         }
@@ -54,7 +54,7 @@ private:
             return str;
         }
     };
-     Token makeToken(Token tk) {
+    Token makeToken(Token tk) {
         text = ctx.tokenText(tk);
         return tk;
     }
