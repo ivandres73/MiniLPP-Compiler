@@ -6,6 +6,7 @@
     hex    = [a-fA-F];
     string = .+;
     iden   = [_a-zA-Z];
+    spec   = [a-zA-Z_-")""(""*"&"^"%$#@!`~number \t\n];//for block comments
 */  
 
 Token exprLexer::getNextToken() {
@@ -34,7 +35,9 @@ Token exprLexer::getNextToken() {
 
             *                     {return makeToken(Token::Error);}
             [ \t]                 {continue;} //whitespaces
-            "\n"+                 {return makeToken(Token::Space);}
+            "//"[^\n]*            {continue;} //line comments
+            "/*"spec*"*""/"       {cout << "shie men\n"; continue;} //block comments
+            "\n"+                 {return makeToken(Token::Eol);}
             number                {return makeToken(Token::decNum);}
             '0b'[0-1]+            {return makeToken(Token::binNum);}
             '0b'number            {return makeToken(Token::Error);}
@@ -103,7 +106,7 @@ Token exprLexer::getNextToken() {
             'Escribir'            {return makeToken(Token::kwEscribir);}
             'Verdadero'           {return makeToken(Token::kwVerdadero);}
             'Falso'               {return makeToken(Token::kwFalso);}
-            iden(iden|[0-9])+     {return makeToken(Token::Iden);}
+            iden(iden|[0-9])*     {return makeToken(Token::Iden);}
             "\x00"                {return makeToken(Token::Eof);}
         */
     }
@@ -159,7 +162,7 @@ ostream& operator<<(ostream& out, Token tk) {
     case(opMod);
     case(opPow);
     case(Eof);
-    case(Space);
+    case(Eol);
     case(Char);
     case(String);
     case(Iden);

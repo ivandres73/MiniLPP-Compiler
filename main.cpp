@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Token tk;
     do {
         tk = lex.getNextToken();
-        if (tk != Token::Space)
+        if (tk != Token::Eol)
             cout << '\'' << tk << "\' " << lex.getText() << endl;
     } while(tk != Token::Eof);
 

@@ -74,3 +74,22 @@
 %token Eof
 
 %%
+
+PROGRAM: SUBTYPES-SEC VARIABLE-SEC SUBPROGRAM-DECL kwInicio STATEMENT Eol FIN
+    ;
+
+SUBTYPES-SEC:
+    ;
+
+VARIABLE-SEC:
+    ;
+
+SUBPROGRAM-DECL:
+    ;
+
+STATEMENT:
+    ;
+
+FIN: kwFin
+    |kwFinal
+    ;

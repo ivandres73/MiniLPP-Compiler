@@ -15,7 +15,7 @@ enum class Token {
     opMod,
     opPow,
     Error,
-    Space,//syntax separators
+    Eol,//syntax separators
     opBra,
     clBra,
     Comma,
