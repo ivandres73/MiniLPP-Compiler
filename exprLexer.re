@@ -38,10 +38,10 @@ yytokentype exprLexer::getNextToken() {
             "//"[^\n]*            {continue;} //line comments
             "/*"spec*"*""/"       {cout << "shie men\n"; continue;} //block comments
             "\n"[ \t\n]*          {return makeToken(Eol);}
-            number                {return makeToken(decNum);}
-            '0b'[0-1]+            {return makeToken(binNum);}
+            number                {return makeToken(Num);}
+            '0b'[0-1]+            {return makeToken(Num);}
             '0b'number            {return makeToken(Error);}
-            '0x'(hex|digit)+      {return makeToken(hexNum);}
+            '0x'(hex|digit)+      {return makeToken(Num);}
             '0x'([a-zA-Z]|digit)+ {return makeToken(Error);}
             "'"."'"|"'''"         {return makeToken(Char);}
             "\""string"\""        {return makeToken(String);}
@@ -61,6 +61,7 @@ yytokentype exprLexer::getNextToken() {
             "<"                   {return makeToken(leThan);}
             ">"                   {return makeToken(grThan);}
             "="                   {return makeToken(Equal);}
+            "<>"                  {return makeToken(NotEq);}
             "<="                  {return makeToken(leEqu);}
             ">="                  {return makeToken(grEqu);}
             'Entero'              {return makeToken(kwEntero);}

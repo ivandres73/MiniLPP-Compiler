@@ -12,9 +12,7 @@
 
 %}
 
-%token decNum
-%token hexNum
-%token binNum
+%token Num
 %token Char
 %token String
 %token Iden
@@ -36,6 +34,7 @@
 %token leThan "<"
 %token grThan ">"
 %token Equal "="
+%token NotEq "<>"
 %token leEqu "<="
 %token grEqu ">="
 %token kwEntero
@@ -88,10 +87,34 @@
 PROGRAM: SUBTYPES-SEC VARIABLE-SEC SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN ":"
     ;
 
-SUBTYPES-SEC:
+SUBTYPES-SEC: SUBTYPE-DECL
     ;
 
-VARIABLE-SEC:
+SUBTYPE-DECL: SUBTYPE-DECL kwTipo Iden kwEs TYPE Eol
+    |
+    ;
+
+TYPE: kwEntero
+    | kwBooleano
+    | kwCaracter
+    | ARRAY-TYPE
+    ;
+
+ARRAY-TYPE: kwArreglo "[" Num "]" kwDe TYPE
+    ;
+
+VARIABLE-SEC: VARIABLE-DECL
+    ;
+
+VARIABLE-DECL: VARIABLE-DECL TYPE ID_1 Eol
+    |
+    ;
+
+ID_1: Iden IDS
+    ;
+
+IDS: IDS "," Iden
+    |
     ;
 
 SUBPROGRAM-DECL:
@@ -101,7 +124,8 @@ STATEMENTS: STATEMENTS STATEMENT Eol
     |
     ;
 
-STATEMENT: kwLlamar Iden OPT_FUNC
+STATEMENT: LVALUE "<-" EXPR
+    | kwLlamar Iden OPT_FUNC
     | kwEscriba ARGS
     | kwLea LVALUE
     | kwRetorne OPT_EXPR
@@ -151,24 +175,50 @@ OPT_EXPR: EXPR
     |
     ;
 
-EXPR: EXPR "+" TERM
-    | EXPR "-" TERM
+EXPR: EXPR "=" TERM
+    | EXPR "<>" TERM
+    | EXPR "<=" TERM
+    | EXPR ">=" TERM
+    | EXPR "<" TERM
+    | EXPR ">" TERM
     | TERM
     ;
 
-TERM: TERM "*" FACTOR
-    | TERM "div" FACTOR
-    | TERM "mod" FACTOR
+TERM: TERM "+" TERM2
+    | TERM "-" TERM2
+    | TERM kwO TERM2
+    | TERM2
+    ;
+
+TERM2: TERM2 "*" TERM3
+    | TERM2 "div" TERM3
+    | TERM2 "mod" TERM3
+    | TERM2 kwY TERM3
+    | TERM3
+    ;
+
+TERM3: TERM3 "^" TERM4
+    | TERM4
+    ;
+
+TERM4: kwNo FACTOR
+    | "-" FACTOR
     | FACTOR
     ;
 
-FACTOR: Iden
-    | decNum | hexNum | binNum
+FACTOR: Iden OPT_FUNC
+    | Num | Char
+    | BOOL
+    | LVALUE
     | "(" EXPR ")"
     ;
 
 OPT_EOL: Eol
     |
+    ;
+
+BOOL: kwVerdadero
+    | kwFalso
     ;
 
 FIN: kwFin
