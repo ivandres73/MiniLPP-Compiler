@@ -1,0 +1,53 @@
+[33mcommit a404b24257b0c7563e335a4e4350d4f751209aef[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Mon Aug 19 13:35:48 2019 -0600
+
+    subtypes and variables done
+
+[33mcommit 04f8abd57b73b8dede8a1380598dbb30960213ce[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Mon Aug 19 11:37:49 2019 -0600
+
+    eol fix and more stmts added
+
+[33mcommit 4059ed915c88e2b395a8354bd27ed1391698c566[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Mon Aug 19 08:39:46 2019 -0600
+
+    lea stmt done
+
+[33mcommit d365cce241cba288ba04c1250aa4b4ce03b3fabf[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Mon Aug 19 08:30:59 2019 -0600
+
+    statements initialized
+
+[33mcommit 25ee5e0c2275fe4269b315ea98c80459911a81db[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Mon Aug 19 00:09:21 2019 -0600
+
+    parser being built
+
+[33mcommit 17647afe0c43d10b37f908f1cc29bbd647663eee[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Sat Aug 17 16:21:22 2019 -0600
+
+    bcomments
+
+[33mcommit 83ed924d6da499324e2ddd6f1d7d4718b026861e[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Sat Aug 17 12:35:27 2019 -0600
+
+    created parser template
+
+[33mcommit 4180648fba05c59f73bcc69fceefc4f3e50ed8ad[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Thu Aug 15 18:52:35 2019 -0600
+
+    pushing changes
+
+[33mcommit d586a85bc105ee935cf085da19bc4f2eefc755a2[m
+Author: Ivan C <ivandres73@unitec.edu>
+Date:   Wed Aug 14 19:57:29 2019 -0600
+
+    init commit

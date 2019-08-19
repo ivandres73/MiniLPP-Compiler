@@ -108,7 +108,7 @@ yytokentype exprLexer::getNextToken() {
             'Verdadero'           {return makeToken(kwVerdadero);}
             'Falso'               {return makeToken(kwFalso);}
             iden(iden|digit)*     {return makeToken(Iden);}
-            "/x00"                {return Eof;}
+            "\x00"                {return makeToken(Eof);}
         */
     }
 }
