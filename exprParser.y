@@ -103,12 +103,30 @@ STATEMENTS: STATEMENTS STATEMENT Eol
 
 STATEMENT: kwLlamar Iden OPT_FUNC
     | kwEscriba ARGS
-    | kwLea
+    | kwLea LVALUE
     | kwRetorne OPT_EXPR
-    | kwSi
-    | kwMientras EXPR
-    | kwRepita Eol
-    | kwPara
+    | SI_STMT
+    | kwMientras EXPR OPT_EOL kwHaga Eol STATEMENT_1 kwFin kwMientras
+    | kwRepita Eol STATEMENT_1 kwHasta EXPR
+    | kwPara LVALUE "<-" EXPR kwHasta EXPR kwHaga Eol STATEMENT_1 kwFin kwPara
+    ;
+
+STATEMENT_1: STATEMENT Eol STATEMENTS
+    ;
+
+SI_STMT: kwSi EXPR OPT_EXPR OPT_EOL kwEntonces OPT_EOL STATEMENT_1 OPT_SINOSI OPT_SINO
+    ;
+
+OPT_SINOSI: OPT_SINO kwSino kwSi EXPR OPT_EOL kwEntero STATEMENT_1
+    |
+    ;
+
+OPT_SINO: kwSino STATEMENT_1
+    |
+    ;
+
+LVALUE: Iden
+    | Iden "[" EXPR "]"
     ;
 
 OPT_FUNC: "(" OPT_EXPRS ")"
@@ -121,6 +139,7 @@ OPT_EXPRS: OPT_EXPRS EXPR ","
     ;
 
 ARGS: ARGS ARG
+    | ARGS ARG ","
     |
     ;
 
