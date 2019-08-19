@@ -9,7 +9,7 @@
     spec   = [a-zA-Z_-")""(""*"&"^"%$#@!`~number \t\n];//for block comments
 */  
 
-Token exprLexer::getNextToken() {
+yytokentype exprLexer::getNextToken() {
 
     #define YYFILL(n)\
     do\
@@ -18,9 +18,9 @@ Token exprLexer::getNextToken() {
         switch (x)\
         {\
         case fillstatus::Error:\
-            return Token::Error;\
+            return Error;\
         case fillstatus::Eof:\
-            return Token::Eof;\
+            return Eof;\
         }\
     } while(0)\
 
@@ -33,81 +33,81 @@ Token exprLexer::getNextToken() {
             re2c:define:YYMARKER = ctx.mark;
             re2c:define:YYFILL:naked = 0;
 
-            *                     {return makeToken(Token::Error);}
+            *                     {return makeToken(Error);}
             [ \t]                 {continue;} //whitespaces
             "//"[^\n]*            {continue;} //line comments
             "/*"spec*"*""/"       {cout << "shie men\n"; continue;} //block comments
-            "\n"+                 {return makeToken(Token::Eol);}
-            number                {return makeToken(Token::decNum);}
-            '0b'[0-1]+            {return makeToken(Token::binNum);}
-            '0b'number            {return makeToken(Token::Error);}
-            '0x'(hex|digit)+      {return makeToken(Token::hexNum);}
-            '0x'([a-zA-Z]|digit)+ {return makeToken(Token::Error);}
-            "'"."'"|"'''"         {return makeToken(Token::Char);}
-            "\""string"\""        {return makeToken(Token::String);}
-            "+"                   {return makeToken(Token::opAdd);}
-            "*"                   {return makeToken(Token::opMul);}
-            "-"                   {return makeToken(Token::opSub);}
-            "^"                   {return makeToken(Token::opPow);}
-            'div'                 {return makeToken(Token::opDiv);}
-            'mod'                 {return makeToken(Token::opMod);}
-            "["                   {return makeToken(Token::opBra);}
-            "]"                   {return makeToken(Token::clBra);}
-            ","                   {return makeToken(Token::Comma);}
-            ":"                   {return makeToken(Token::Colon);}
-            "("                   {return makeToken(Token::opPar);}
-            ")"                   {return makeToken(Token::clPar);}
-            "<-"                  {return makeToken(Token::Assign);}
-            "<"                   {return makeToken(Token::leThan);}
-            ">"                   {return makeToken(Token::grThan);}
-            "="                   {return makeToken(Token::Equal);}
-            "<="                  {return makeToken(Token::leEqu);}
-            ">="                  {return makeToken(Token::grEqu);}
-            'Entero'              {return makeToken(Token::kwEntero);}
-            'Real'                {return makeToken(Token::kwReal);}
-            'Cadena'              {return makeToken(Token::kwCadena);}
-            'Booleano'            {return makeToken(Token::kwBooleano);}
-            'Caracter'            {return makeToken(Token::kwCaracter);}
-            'Arreglo'             {return makeToken(Token::kwArreglo);}
-            'De'                  {return makeToken(Token::kwDe);}
-            'Funcion'             {return makeToken(Token::kwFuncion);}
-            'Procedimiento'       {return makeToken(Token::kwProcedimiento);}
-            'Var'                 {return makeToken(Token::kwVar);}
-            'Inicio'              {return makeToken(Token::kwInicio);}
-            'Fin'                 {return makeToken(Token::kwFin);}
-            'Final'               {return makeToken(Token::kwFinal);}
-            'Si'                  {return makeToken(Token::kwSi);}
-            'Entonces'            {return makeToken(Token::kwEntonces);}
-            'Sino'                {return makeToken(Token::kwSino);}
-            'Para'                {return makeToken(Token::kwPara);}
-            'Mientras'            {return makeToken(Token::kwMientras);}
-            'Haga'                {return makeToken(Token::kwHaga);}
-            'Llamar'              {return makeToken(Token::kwLlamar);}
-            'Repita'              {return makeToken(Token::kwRepita);}
-            'Hasta'               {return makeToken(Token::kwHasta);}
-            'Caso'                {return makeToken(Token::kwCaso);}
-            'O'                   {return makeToken(Token::kwO);}
-            'Y'                   {return makeToken(Token::kwY);}
-            'No'                  {return makeToken(Token::kwNo);}
-            'Lea'                 {return makeToken(Token::kwLea);}
-            'Escriba'             {return makeToken(Token::kwEscriba);}
-            'Retorne'             {return makeToken(Token::kwRetorne);}
-            'Tipo'                {return makeToken(Token::kwTipo);}
-            'Es'                  {return makeToken(Token::kwEs);}
-            'Registro'            {return makeToken(Token::kwRegistro);}
-            'Archivo'             {return makeToken(Token::kwArchivo);}
-            'Secuencial'          {return makeToken(Token::kwSecuencial);}
-            'Abrir'               {return makeToken(Token::kwAbrir);}
-            'Como'                {return makeToken(Token::kwComo);}
-            'Lectura'             {return makeToken(Token::kwLectura);}
-            'Escritura'           {return makeToken(Token::kwEscritura);}
-            'Cerrar'              {return makeToken(Token::kwCerrar);}
-            'Leer'                {return makeToken(Token::kwLeer);}
-            'Escribir'            {return makeToken(Token::kwEscribir);}
-            'Verdadero'           {return makeToken(Token::kwVerdadero);}
-            'Falso'               {return makeToken(Token::kwFalso);}
-            iden(iden|[0-9])*     {return makeToken(Token::Iden);}
-            "\x00"                {return makeToken(Token::Eof);}
+            "\n"+                 {return makeToken(Eol);}
+            number                {return makeToken(decNum);}
+            '0b'[0-1]+            {return makeToken(binNum);}
+            '0b'number            {return makeToken(Error);}
+            '0x'(hex|digit)+      {return makeToken(hexNum);}
+            '0x'([a-zA-Z]|digit)+ {return makeToken(Error);}
+            "'"."'"|"'''"         {return makeToken(Char);}
+            "\""string"\""        {return makeToken(String);}
+            "+"                   {return makeToken(opAdd);}
+            "*"                   {return makeToken(opMul);}
+            "-"                   {return makeToken(opSub);}
+            "^"                   {return makeToken(opPow);}
+            'div'                 {return makeToken(opDiv);}
+            'mod'                 {return makeToken(opMod);}
+            "["                   {return makeToken(opBra);}
+            "]"                   {return makeToken(clBra);}
+            ","                   {return makeToken(Comma);}
+            ":"                   {return makeToken(Colon);}
+            "("                   {return makeToken(opPar);}
+            ")"                   {return makeToken(clPar);}
+            "<-"                  {return makeToken(Assign);}
+            "<"                   {return makeToken(leThan);}
+            ">"                   {return makeToken(grThan);}
+            "="                   {return makeToken(Equal);}
+            "<="                  {return makeToken(leEqu);}
+            ">="                  {return makeToken(grEqu);}
+            'Entero'              {return makeToken(kwEntero);}
+            'Real'                {return makeToken(kwReal);}
+            'Cadena'              {return makeToken(kwCadena);}
+            'Booleano'            {return makeToken(kwBooleano);}
+            'Caracter'            {return makeToken(kwCaracter);}
+            'Arreglo'             {return makeToken(kwArreglo);}
+            'De'                  {return makeToken(kwDe);}
+            'Funcion'             {return makeToken(kwFuncion);}
+            'Procedimiento'       {return makeToken(kwProcedimiento);}
+            'Var'                 {return makeToken(kwVar);}
+            'Inicio'              {return makeToken(kwInicio);}
+            'Fin'                 {return makeToken(kwFin);}
+            'Final'               {return makeToken(kwFinal);}
+            'Si'                  {return makeToken(kwSi);}
+            'Entonces'            {return makeToken(kwEntonces);}
+            'Sino'                {return makeToken(kwSino);}
+            'Para'                {return makeToken(kwPara);}
+            'Mientras'            {return makeToken(kwMientras);}
+            'Haga'                {return makeToken(kwHaga);}
+            'Llamar'              {return makeToken(kwLlamar);}
+            'Repita'              {return makeToken(kwRepita);}
+            'Hasta'               {return makeToken(kwHasta);}
+            'Caso'                {return makeToken(kwCaso);}
+            'O'                   {return makeToken(kwO);}
+            'Y'                   {return makeToken(kwY);}
+            'No'                  {return makeToken(kwNo);}
+            'Lea'                 {return makeToken(kwLea);}
+            'Escriba'             {return makeToken(kwEscriba);}
+            'Retorne'             {return makeToken(kwRetorne);}
+            'Tipo'                {return makeToken(kwTipo);}
+            'Es'                  {return makeToken(kwEs);}
+            'Registro'            {return makeToken(kwRegistro);}
+            'Archivo'             {return makeToken(kwArchivo);}
+            'Secuencial'          {return makeToken(kwSecuencial);}
+            'Abrir'               {return makeToken(kwAbrir);}
+            'Como'                {return makeToken(kwComo);}
+            'Lectura'             {return makeToken(kwLectura);}
+            'Escritura'           {return makeToken(kwEscritura);}
+            'Cerrar'              {return makeToken(kwCerrar);}
+            'Leer'                {return makeToken(kwLeer);}
+            'Escribir'            {return makeToken(kwEscribir);}
+            'Verdadero'           {return makeToken(kwVerdadero);}
+            'Falso'               {return makeToken(kwFalso);}
+            iden(iden|digit)*     {return makeToken(Iden);}
+            "/x00"                {return Eof;}
         */
     }
 }
@@ -143,74 +143,4 @@ exprLexer::fillstatus exprLexer::context::fill(size_t need) {
         lim += YYMAXFILL;
     }
     return fillstatus::Ok;
-}
-
-#define case(name)\
-    case Token::name:\
-    out << #name;\
-    break
-
-ostream& operator<<(ostream& out, Token tk) {
-    switch (tk) {
-    case(decNum);
-    case(binNum);
-    case(hexNum);
-    case(opAdd);
-    case(opMul);
-    case(opDiv);
-    case(opSub);
-    case(opMod);
-    case(opPow);
-    case(Eof);
-    case(Eol);
-    case(Char);
-    case(String);
-    case(Iden);
-    case(kwEntero);
-    case(kwReal);
-    case(kwCadena);
-    case(kwBooleano);
-    case(kwCaracter);
-    case(kwArreglo);
-    case(kwDe);
-    case(kwFuncion);
-    case(kwProcedimiento);
-    case(kwVar);
-    case(kwInicio);
-    case(kwFin);
-    case(kwFinal);
-    case(kwSi);
-    case(kwEntonces);
-    case(kwSino);
-    case(kwPara);
-    case(kwMientras);
-    case(kwHaga);
-    case(kwLlamar);
-    case(kwRepita);
-    case(kwHasta);
-    case(kwCaso);
-    case(kwO);
-    case(kwY);
-    case(kwNo);
-    case(kwLea);
-    case(kwEscriba);
-    case(kwRetorne);
-    case(kwTipo);
-    case(kwEs);
-    case(kwRegistro);
-    case(kwArchivo);
-    case(kwSecuencial);
-    case(kwAbrir);
-    case(kwComo);
-    case(kwLectura);
-    case(kwEscritura);
-    case(kwCerrar);
-    case(kwLeer);
-    case(kwEscribir);
-    case(kwVerdadero);
-    case(kwFalso);
-    default:
-        out << "Error";
-        break;
-    }
 }

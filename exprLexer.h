@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <cstring> // for memmove() and memset()
-#include "Tokens.h"
+#include "build/Tokens.h"
 
 using std::cout;
 using std::endl;
@@ -12,13 +12,12 @@ using std::ostream;
 
 #define SIZE 1024
 
-ostream& operator<<(ostream&, Token);
-
 class exprLexer {
 public:
     exprLexer(std::ifstream& in) : ctx(in), line(1) { }
-    Token getNextToken();
+    yytokentype getNextToken();
     string getText() { return text; }
+    int getLine() { return line; }
     
 private:
     int line;
@@ -43,18 +42,21 @@ private:
         ~context() {
             delete[] buf;
         }
-        string tokenText(const Token &tk) {
-            if (tk == Token::Char || tk == Token::String) { //omitting the apostrophes in chars
+        string tokenText(const yytokentype &tk) {
+            if (tk == yytokentype::Char || tk == yytokentype::String) { //omitting the apostrophes in chars
                 tok++;
                 curs--;
             }
+            if (tk == yytokentype::Eol) {
+
+            }
             string str(tok, curs - tok);
-            if (tk == Token::Char || tk == Token::String)
+            if (tk == yytokentype::Char || tk == yytokentype::String)
                 curs++;
             return str;
         }
     };
-    Token makeToken(Token tk) {
+    yytokentype makeToken(const yytokentype &tk) {
         text = ctx.tokenText(tk);
         return tk;
     }
