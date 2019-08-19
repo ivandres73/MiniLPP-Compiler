@@ -85,7 +85,7 @@
 
 %%
 
-PROGRAM: SUBTYPES-SEC VARIABLE-SEC SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS Eol FIN ":"
+PROGRAM: SUBTYPES-SEC VARIABLE-SEC SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN ":"
     ;
 
 SUBTYPES-SEC:
@@ -97,21 +97,30 @@ VARIABLE-SEC:
 SUBPROGRAM-DECL:
     ;
 
-STATEMENTS: STATEMENT STATEMENTS
+STATEMENTS: STATEMENTS STATEMENT Eol
     |
     ;
 
 STATEMENT: kwLlamar
     | kwEscriba ARGS
+    | kwLea
+    | kwRetorne OPT_EXPR
+    | kwSi
+    | kwMientras EXPR
+    | kwRepita Eol
+    | kwPara
     ;
 
-ARGS: ARG ARGS
-    | "," ARG ARGS
+ARGS: ARGS ARG
     |
     ;
 
 ARG: String
     | EXPR
+    ;
+
+OPT_EXPR: EXPR
+    |
     ;
 
 EXPR: EXPR "+" TERM
