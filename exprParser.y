@@ -101,7 +101,7 @@ STATEMENTS: STATEMENTS STATEMENT Eol
     |
     ;
 
-STATEMENT: kwLlamar
+STATEMENT: kwLlamar Iden OPT_FUNC
     | kwEscriba ARGS
     | kwLea
     | kwRetorne OPT_EXPR
@@ -109,6 +109,15 @@ STATEMENT: kwLlamar
     | kwMientras EXPR
     | kwRepita Eol
     | kwPara
+    ;
+
+OPT_FUNC: "(" OPT_EXPRS ")"
+    |
+    ;
+
+OPT_EXPRS: OPT_EXPRS EXPR ","
+    | OPT_EXPRS EXPR
+    |
     ;
 
 ARGS: ARGS ARG
