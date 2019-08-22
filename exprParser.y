@@ -186,8 +186,10 @@ OPT_EXPRS: OPT_EXPRS EXPR ","
     |
     ;
 
-ARGS: ARGS ARG
-    | ARGS ARG ","
+ARGS: ARG MORE_ARGS
+    ;
+
+MORE_ARGS: "," ARG MORE_ARGS
     |
     ;
 
@@ -199,12 +201,12 @@ OPT_EXPR: EXPR
     |
     ;
 
-EXPR: EXPR "=" TERM
-    | EXPR "<>" TERM
-    | EXPR "<=" TERM
-    | EXPR ">=" TERM
-    | EXPR "<" TERM
-    | EXPR ">" TERM
+EXPR: TERM "=" EXPR
+    | TERM "<>" EXPR
+    | TERM "<=" EXPR
+    | TERM ">=" EXPR
+    | TERM "<" EXPR
+    | TERM ">" EXPR
     | TERM
     ;
 
@@ -230,11 +232,18 @@ TERM4: kwNo FACTOR
     | FACTOR
     ;
 
-FACTOR: Iden OPT_FUNC
+FACTOR:
     | Num | Char
     | BOOL
-    | LVALUE
     | "(" EXPR ")"
+    | RVALUE
+    ;
+
+RVALUE: Iden RVALUE2
+    ;
+
+RVALUE2: "[" Num "]"
+    | OPT_FUNC
     ;
 
 OPT_EOL: Eol
