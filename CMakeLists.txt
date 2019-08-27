@@ -19,8 +19,16 @@ add_custom_command (
   MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/exprLexer.re
 )
 
+#Run treecc to generate the ast
+add_custom_command(
+  OUTPUT ast.cpp ast.h
+  COMMAND treecc -o ast.cpp -h ast.h ${PROJECT_SOURCE_DIR}/ast.tc
+  MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/ast.tc
+)
+
 add_executable(${PROJECT_NAME}
   #main.cpp
   exprParser.cpp
   exprLexer.cpp
+  ast.cpp
 )

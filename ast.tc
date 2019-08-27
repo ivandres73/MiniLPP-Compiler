@@ -1,0 +1,163 @@
+%option lang = "c++"
+
+%{
+    #include "ast.h"
+
+%}
+
+%decls %{
+    #include <iostream>
+    #include <unordered_map>
+    #include <string>
+    #include <list>
+    #include <string.h>
+    #include <cmath>
+
+    using std::list;
+    using std::cout;
+    using std::string;
+
+    class Statement;
+
+    std::unordered_map<string, int> vars;
+    using stmtList = list<Statement*>;
+%}
+
+%node ASTNode %abstract %typedef
+
+%node Expr ASTNode %abstract
+
+%node Statement ASTNode %abstract
+
+%node BinExpr Expr %abstract = {
+    Expr *expr1;
+    Expr *expr2;
+}
+
+%node AddExpr BinExpr
+%node SubExpr BinExpr
+%node MulExpr BinExpr
+%node PowExpr BinExpr
+%node DivExpr BinExpr
+%node ModExpr BinExpr
+%node EquExpr BinExpr
+%node NeqExpr BinExpr
+%node GrtExpr BinExpr
+%node LsrExpr BinExpr
+%node GeqExpr BinExpr
+%node LeqExpr BinExpr
+%node OrExpr  BinExpr
+%node AndExpr BinExpr
+%node NumExpr Expr = {
+    int value;
+}
+%node IdenExpr Expr = {
+    char *var_name;
+}
+%node StringExpr Expr = {
+    string value;
+}
+
+%node printStmt Statement = {
+    Expr *expr;
+}
+%node assignStmt Statement = {
+    char *var_name;
+    Expr *expr;
+}
+%node ifStmt Statement = {
+    Expr *expr;
+    stmtList true_block;
+    stmtList false_block;
+}
+
+%operation %virtual int eval(Expr *this)
+%operation %virtual void exec(Statement *this)
+
+eval(NumExpr) {
+    return value;
+}
+
+eval(IdenExpr) {
+    return vars[var_name];
+}
+
+eval(AddExpr) {
+    return expr1->eval() + expr2->eval();
+}
+
+eval(SubExpr) {
+    return expr1->eval() - expr2->eval();
+}
+
+eval(MulExpr) {
+    return expr1->eval() * expr2->eval();
+}
+
+eval(PowExpr) {
+    return std::pow(expr1->eval(), expr2->eval());
+}
+
+eval(DivExpr) {
+    return expr1->eval() / expr2->eval();
+}
+
+eval(ModExpr) {
+    return expr1->eval() % expr2->eval();
+}
+
+eval(EquExpr) {
+    return expr1->eval() == expr2->eval();
+}
+
+eval(NeqExpr) {
+    return expr1->eval() != expr2->eval();
+}
+
+eval(GrtExpr) {
+    return expr1->eval() > expr2->eval();
+}
+
+eval(LsrExpr) {
+    return expr1->eval() < expr2->eval();
+}
+
+eval(GeqExpr) {
+    return expr1->eval() >= expr2->eval();
+}
+
+eval(LeqExpr) {
+    return expr1->eval() >= expr2->eval();
+}
+
+eval(OrExpr) {
+    return expr1->eval() || expr2->eval();
+}
+
+eval(AndExpr) {
+    return expr1->eval() && expr2->eval();
+}
+
+eval(StringExpr) {
+    return value;
+}
+
+exec(printStmt) {
+    cout << expr->eval();
+}
+
+exec(assignStmt) {
+    vars[var_name] = expr->eval();
+}
+
+exec(ifStmt) {
+    if (expr->eval()) {
+        for (auto i : true_block) {
+            i->exec();
+        }
+    } else {
+        for (auto i : false_block) {
+            i->exec();
+        }
+    }
+}

@@ -10,7 +10,6 @@ public:
     exprParser(std::ifstream& in, string name) : lex(in),
         filename(std::move(name)){ }
     int parse() { return yyparse(); };
-    int getNextToken() { return lex.getNextTokenInt(); }
     exprLexer lex;
 private:
     string filename;

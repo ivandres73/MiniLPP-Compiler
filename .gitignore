@@ -2,7 +2,7 @@
 build/*
 
 #file for tests
-input.txt
+*.txt
 
 #vs code dir
 .vscode/*

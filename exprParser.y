@@ -1,7 +1,14 @@
+%code requires {
+    #include "ast.h"
+    typedef ASTNode* YYSTYPE;
+    #define YYSTYPE_IS_DECLARED
+}
+
 %{
     #include "../exprLexer.h"
 
     int yylex();
+    string getText();
 
     string filename;
 
@@ -193,7 +200,7 @@ MORE_ARGS: "," ARG MORE_ARGS
     |
     ;
 
-ARG: String
+ARG: String { $$ = new StringExpr(getText()); }
     | EXPR
     ;
 
@@ -201,42 +208,43 @@ OPT_EXPR: EXPR
     |
     ;
 
-EXPR: TERM "=" EXPR
-    | TERM "<>" EXPR
-    | TERM "<=" EXPR
-    | TERM ">=" EXPR
-    | TERM "<" EXPR
-    | TERM ">" EXPR
-    | TERM
+EXPR: TERM "=" EXPR  { $$ = new EquExpr((Expr*)$1, (Expr*)$2); }
+    | TERM "<>" EXPR { $$ = new NeqExpr((Expr*)$1, (Expr*)$2); }
+    | TERM "<=" EXPR { $$ = new LeqExpr((Expr*)$1, (Expr*)$2); }
+    | TERM ">=" EXPR { $$ = new GeqExpr((Expr*)$1, (Expr*)$2); }
+    | TERM "<" EXPR  { $$ = new LsrExpr((Expr*)$1, (Expr*)$2); }
+    | TERM ">" EXPR  { $$ = new GrtExpr((Expr*)$1, (Expr*)$2); }
+    | TERM { $$ = $1; }
     ;
 
-TERM: TERM "+" TERM2
-    | TERM "-" TERM2
-    | TERM kwO TERM2
-    | TERM2
+TERM: TERM "+" TERM2 { $$ = new AddExpr((Expr*)$1, (Expr*)$2); }
+    | TERM "-" TERM2 { $$ = new SubExpr((Expr*)$1, (Expr*)$2); }
+    | TERM kwO TERM2 { $$ = new OrExpr((Expr*)$1, (Expr*)$2); }
+    | TERM2 { $$ = $1; }
     ;
 
-TERM2: TERM2 "*" TERM3
-    | TERM2 "div" TERM3
-    | TERM2 "mod" TERM3
-    | TERM2 kwY TERM3
-    | TERM3
+TERM2: TERM2 "*" TERM3  { $$ = new MulExpr((Expr*)$1, (Expr*)$2); }
+    | TERM2 "div" TERM3 { $$ = new DivExpr((Expr*)$1, (Expr*)$2); }
+    | TERM2 "mod" TERM3 { $$ = new ModExpr((Expr*)$1, (Expr*)$2); }
+    | TERM2 kwY TERM3   { $$ = new AndExpr((Expr*)$1, (Expr*)$2); }
+    | TERM3             { $$ = $1; }
     ;
 
-TERM3: TERM3 "^" TERM4
-    | TERM4
+TERM3: TERM3 "^" TERM4 { $$ = new PowExpr((Expr*)$1, (Expr*)$2); }
+    | TERM4            { $$ = $1; }
     ;
 
-TERM4: kwNo FACTOR
-    | "-" FACTOR
-    | FACTOR
+TERM4: kwNo FACTOR { $$ = !$2; }
+    | "-" FACTOR   { $$ = -$2; }
+    | FACTOR       { $$ = $1; }
     ;
 
 FACTOR:
-    | Num | Char
-    | BOOL
-    | "(" EXPR ")"
-    | RVALUE
+    | Num          { $$ = $1; }
+    | Char         { $$ = $1; }
+    | BOOL         { $$ = $1; }
+    | "(" EXPR ")" { $$ = $2; }
+    | RVALUE       { $$ = $1; }
     ;
 
 RVALUE: Iden RVALUE2
@@ -250,8 +258,8 @@ OPT_EOL: Eol
     |
     ;
 
-BOOL: kwVerdadero
-    | kwFalso
+BOOL: kwVerdadero { $$ = $1; }
+    | kwFalso     { $$ = $1; }
     ;
 
 FIN: kwFin
@@ -271,6 +279,9 @@ int yylex() {
     return static_cast<int>(lex->getNextToken());
 }
 
+string getText() {
+    return lex->getText();
+}
 
 int main(int argc, char* argv[]) {
 
