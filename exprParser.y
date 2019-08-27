@@ -92,6 +92,7 @@
 %%
 
 PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN OPT_EOL
+    { }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
@@ -157,7 +158,7 @@ STATEMENTS: STATEMENTS STATEMENT Eol
 
 STATEMENT: LVALUE "<-" EXPR
     | kwLlamar Iden OPT_FUNC
-    | kwEscriba ARGS
+    | kwEscriba ARGS { }
     | kwLea LVALUE
     | kwRetorne OPT_EXPR
     | SI_STMT
@@ -239,7 +240,7 @@ TERM4: kwNo FACTOR { $$ = new NotExpr((Expr*)$2); }
     | FACTOR       { $$ = $1; }
     ;
 
-FACTOR: Num          { $$ = new NumExpr(stoi(getText())); }
+FACTOR: Num        { $$ = new NumExpr(stoi(getText())); }
     | Char         { $$ = new CharExpr(getText()[0]);}
     | BOOL         { $$ = $1; }
     | "(" EXPR ")" { $$ = $2; }

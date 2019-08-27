@@ -12,16 +12,20 @@
     #include <list>
     #include <string.h>
     #include <cmath>
+    #include <vector>
 
     using std::list;
     using std::cout;
     using std::string;
+    using std::vector;
 
-    class Statement;
+    class Expr;
+    using ExprList = vector<Expr*>;
 
     struct Context {
         std::unordered_map<string, int> vars;
     };
+    class Statement;
     using stmtList = list<Statement*>;
 %}
 
@@ -75,7 +79,7 @@
 }
 
 %node printStmt Statement = {
-    Expr *expr;
+    ExprList args;
 }
 %node assignStmt Statement = {
     char *var_name;
@@ -87,6 +91,7 @@
     stmtList false_block;
 }
 
+%operation %virtual string toString(ASTNode *this)
 %operation %virtual int eval(Expr *this)
 %operation %virtual void exec(Statement *this)
 
@@ -144,7 +149,7 @@ eval(GeqExpr) {
 }
 
 eval(LeqExpr) {
-    return expr1->eval() >= expr2->eval();
+    return expr1->eval() <= expr2->eval();
 }
 
 eval(OrExpr) {
@@ -176,7 +181,9 @@ eval(BoolExpr) {
 }
 
 exec(printStmt) {
-    cout << expr->eval();
+    for (auto i : args) {
+        cout << i->toString();
+    }
 }
 
 exec(assignStmt) {
@@ -207,4 +214,101 @@ getChar(CharExpr) {
 }
 getBool(BoolExpr) {
     return value;
+}
+
+toString(IdenExpr) {
+    return var_name;
+}
+
+toString(NumExpr) {
+    return std::to_string(value);
+}
+
+toString(AddExpr) {
+    return expr1->toString() + " + " + expr2->toString();
+}
+
+toString(SubExpr) {
+    return expr1->toString() + " - " + expr2->toString();
+}
+
+toString(MulExpr) {
+    return expr1->toString() + " * " + expr2->toString();
+}
+
+toString(PowExpr) {
+    return expr1->toString() + " ^ " + expr2->toString();
+}
+
+toString(DivExpr) {
+    return expr1->toString() + " div " + expr2->toString();
+}
+
+toString(ModExpr) {
+    return expr1->toString() + " mod " + expr2->toString();
+}
+
+toString(EquExpr) {
+    return expr1->toString() + " = " + expr2->toString();
+}
+
+toString(NeqExpr) {
+    return expr1->toString() + " <> " + expr2->toString();
+}
+
+toString(GrtExpr) {
+    return expr1->toString() + " > " + expr2->toString();
+}
+
+toString(LsrExpr) {
+    return expr1->toString() + " < " + expr2->toString();
+}
+
+toString(GeqExpr) {
+    return expr1->toString() + " >= " + expr2->toString();
+}
+
+toString(LeqExpr) {
+    return expr1->toString() + " <= " + expr2->toString();
+}
+
+toString(OrExpr) {
+    return expr1->toString() + " o " + expr2->toString();
+}
+
+toString(AndExpr) {
+    return expr1->toString() + " y " + expr2->toString();
+}
+
+toString(NotExpr) {
+    return "no " + expr->toString();
+}
+
+toString(NegExpr) {
+    return "-" + expr->toString();
+}
+
+toString(StringExpr) {
+    return value;
+}
+
+toString(CharExpr) {
+    return "" + value;
+}
+
+toString(BoolExpr) {
+    return value ? "Verdadero" : "Falso";
+}
+
+toString(printStmt) {
+    return "Escriba ";// faltan las listas de expresiones
+}
+
+toString(assignStmt) {
+    //vars[var_name] = expr->toString();
+    ;
+}
+
+toString(ifStmt) {
+    return "si ";
 }
