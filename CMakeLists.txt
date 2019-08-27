@@ -4,6 +4,12 @@ project (example)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+#Run treecc to generate the ast
+add_custom_command(
+  OUTPUT ast.cpp ast.h
+  COMMAND treecc -o ast.cpp -h ast.h ${PROJECT_SOURCE_DIR}/ast.tc
+  MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/ast.tc
+)
 
 # Run bison to generate the lexer
 add_custom_command (
@@ -19,16 +25,10 @@ add_custom_command (
   MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/exprLexer.re
 )
 
-#Run treecc to generate the ast
-add_custom_command(
-  OUTPUT ast.cpp ast.h
-  COMMAND treecc -o ast.cpp -h ast.h ${PROJECT_SOURCE_DIR}/ast.tc
-  MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/ast.tc
-)
 
 add_executable(${PROJECT_NAME}
   #main.cpp
   exprParser.cpp
-  exprLexer.cpp
   ast.cpp
+  exprLexer.cpp
 )

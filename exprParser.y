@@ -234,14 +234,13 @@ TERM3: TERM3 "^" TERM4 { $$ = new PowExpr((Expr*)$1, (Expr*)$2); }
     | TERM4            { $$ = $1; }
     ;
 
-TERM4: kwNo FACTOR { $$ = !$2; }
-    | "-" FACTOR   { $$ = -$2; }
+TERM4: kwNo FACTOR { $$ = new NotExpr((Expr*)$2); }
+    | "-" FACTOR   { $$ = new NegExpr((Expr*)$2); }
     | FACTOR       { $$ = $1; }
     ;
 
-FACTOR:
-    | Num          { $$ = $1; }
-    | Char         { $$ = $1; }
+FACTOR: Num          { $$ = new NumExpr(stoi(getText())); }
+    | Char         { $$ = new CharExpr(getText()[0]);}
     | BOOL         { $$ = $1; }
     | "(" EXPR ")" { $$ = $2; }
     | RVALUE       { $$ = $1; }
@@ -258,8 +257,8 @@ OPT_EOL: Eol
     |
     ;
 
-BOOL: kwVerdadero { $$ = $1; }
-    | kwFalso     { $$ = $1; }
+BOOL: kwVerdadero { $$ = new BoolExpr(true); }
+    | kwFalso     { $$ = new BoolExpr(false); }
     ;
 
 FIN: kwFin

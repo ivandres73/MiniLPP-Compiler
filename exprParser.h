@@ -3,6 +3,8 @@
 
 #include "exprLexer.h"
 
+using std::stoi;
+
 extern int yyparse();
 
 class exprParser {
