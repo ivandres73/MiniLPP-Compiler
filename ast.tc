@@ -67,6 +67,14 @@
 %node IdenExpr Expr = {
     char *var_name;
 }
+%node BlockExpr Expr = {
+    ExprList list;
+}
+
+%operation %virtual void addExpr(BlockExpr* this, Expr* e)
+addExpr(BlockExpr) {
+    list.push_back(e);
+}
 
 %node StringExpr Expr = {
     string value;
@@ -79,10 +87,10 @@
 }
 
 %node printStmt Statement = {
-    ExprList args;
+    BlockExpr *args;
 }
 %node assignStmt Statement = {
-    char *var_name;
+    string var_name;
     Expr *expr;
 }
 %node ifStmt Statement = {
@@ -92,116 +100,6 @@
 }
 
 %operation %virtual string toString(ASTNode *this)
-%operation %virtual int eval(Expr *this)
-%operation %virtual void exec(Statement *this)
-
-eval(NumExpr) {
-    return value;
-}
-
-eval(IdenExpr) {
-    //return vars[var_name]; cambiar a context
-    return 1;
-}
-
-eval(AddExpr) {
-    return expr1->eval() + expr2->eval();
-}
-
-eval(SubExpr) {
-    return expr1->eval() - expr2->eval();
-}
-
-eval(MulExpr) {
-    return expr1->eval() * expr2->eval();
-}
-
-eval(PowExpr) {
-    return std::pow(expr1->eval(), expr2->eval());
-}
-
-eval(DivExpr) {
-    return expr1->eval() / expr2->eval();
-}
-
-eval(ModExpr) {
-    return expr1->eval() % expr2->eval();
-}
-
-eval(EquExpr) {
-    return expr1->eval() == expr2->eval();
-}
-
-eval(NeqExpr) {
-    return expr1->eval() != expr2->eval();
-}
-
-eval(GrtExpr) {
-    return expr1->eval() > expr2->eval();
-}
-
-eval(LsrExpr) {
-    return expr1->eval() < expr2->eval();
-}
-
-eval(GeqExpr) {
-    return expr1->eval() >= expr2->eval();
-}
-
-eval(LeqExpr) {
-    return expr1->eval() <= expr2->eval();
-}
-
-eval(OrExpr) {
-    return expr1->eval() || expr2->eval();
-}
-
-eval(AndExpr) {
-    return expr1->eval() && expr2->eval();
-}
-
-eval(NotExpr) {
-    return !expr->eval();
-}
-
-eval(NegExpr) {
-    return -expr->eval();
-}
-
-eval(StringExpr) {
-    return -1;
-}
-
-eval(CharExpr) {
-    return -1;
-}
-
-eval(BoolExpr) {
-    return -1;
-}
-
-exec(printStmt) {
-    for (auto i : args) {
-        cout << i->toString();
-    }
-}
-
-exec(assignStmt) {
-    //vars[var_name] = expr->eval();
-    ;
-}
-
-exec(ifStmt) {
-    if (expr->eval()) {
-        for (auto i : true_block) {
-            i->exec();
-        }
-    } else {
-        for (auto i : false_block) {
-            i->exec();
-        }
-    }
-}
 
 %operation %virtual string getString(StringExpr*)
 %operation %virtual char getChar(CharExpr*)
@@ -305,10 +203,15 @@ toString(printStmt) {
 }
 
 toString(assignStmt) {
-    //vars[var_name] = expr->toString();
-    ;
+    return var_name + " <- " + expr->toString();
 }
 
 toString(ifStmt) {
     return "si ";
+}
+
+toString(BlockExpr) {
+    for (auto i : list) {
+        i->toString();
+    }
 }

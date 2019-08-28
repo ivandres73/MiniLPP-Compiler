@@ -152,13 +152,16 @@ MORE_ARGUMENT:  "," kwVar Iden
     |
     ;
 
-STATEMENTS: STATEMENTS STATEMENT Eol
+STATEMENTS: STATEMENTS STATEMENT Eol {
+    ExprList l;
+    BlockExpr *b = new BlockExpr(l);
+    b->addExpr((Expr*)$2); }
     |
     ;
 
 STATEMENT: LVALUE "<-" EXPR
     | kwLlamar Iden OPT_FUNC
-    | kwEscriba ARGS { }
+    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$1); }
     | kwLea LVALUE
     | kwRetorne OPT_EXPR
     | SI_STMT
@@ -194,15 +197,19 @@ OPT_EXPRS: OPT_EXPRS EXPR ","
     |
     ;
 
-ARGS: ARG MORE_ARGS
+ARGS: ARG MORE_ARGS {
+    ExprList l;
+    BlockExpr *b = new BlockExpr(l);
+    b->addExpr((Expr*)$1);
+    $$ = b; }
     ;
 
-MORE_ARGS: "," ARG MORE_ARGS
+MORE_ARGS: "," ARG MORE_ARGS {}
     |
     ;
 
 ARG: String { $$ = new StringExpr(getText()); }
-    | EXPR
+    | EXPR { $$ = $1; }
     ;
 
 OPT_EXPR: EXPR
