@@ -92,7 +92,12 @@
 %%
 
 PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN OPT_EOL
-    { }
+    { 
+        StmtList l;
+        BlockStmt *b = new BlockStmt(l);
+        b->addStmt((Statement*)$8);
+        $$ = b; }
+        //b->toString(); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
@@ -153,15 +158,16 @@ MORE_ARGUMENT:  "," kwVar Iden
     ;
 
 STATEMENTS: STATEMENTS STATEMENT Eol {
-    ExprList l;
-    BlockExpr *b = new BlockExpr(l);
-    b->addExpr((Expr*)$2); }
-    |
+    StmtList l;
+    BlockStmt *b = new BlockStmt(l);
+    b->addStmt((Statement*)$2); }
+    //cout << b->toString(); }
+    | 
     ;
 
 STATEMENT: LVALUE "<-" EXPR
     | kwLlamar Iden OPT_FUNC
-    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$1); }
+    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); cout << $$->toString(); }
     | kwLea LVALUE
     | kwRetorne OPT_EXPR
     | SI_STMT

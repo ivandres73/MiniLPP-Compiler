@@ -22,11 +22,12 @@
     class Expr;
     using ExprList = vector<Expr*>;
 
+
     struct Context {
         std::unordered_map<string, int> vars;
     };
     class Statement;
-    using stmtList = list<Statement*>;
+    using StmtList = list<Statement*>;
 %}
 
 %node ASTNode %abstract %typedef
@@ -86,6 +87,15 @@ addExpr(BlockExpr) {
     bool value;
 }
 
+%node BlockStmt Statement = {
+    StmtList list;
+}
+
+%operation %virtual void addStmt(BlockStmt* this, Statement* s)
+addStmt(BlockStmt) {
+    list.push_back(s);
+}
+
 %node printStmt Statement = {
     BlockExpr *args;
 }
@@ -95,8 +105,8 @@ addExpr(BlockExpr) {
 }
 %node ifStmt Statement = {
     Expr *expr;
-    stmtList true_block;
-    stmtList false_block;
+    StmtList true_block;
+    StmtList false_block;
 }
 
 %operation %virtual string toString(ASTNode *this)
@@ -199,7 +209,9 @@ toString(BoolExpr) {
 }
 
 toString(printStmt) {
-    return "Escriba ";// faltan las listas de expresiones
+    string s("Escriba ");
+    s += args->toString();
+    return s;
 }
 
 toString(assignStmt) {
@@ -211,7 +223,16 @@ toString(ifStmt) {
 }
 
 toString(BlockExpr) {
+    string s;
     for (auto i : list) {
+        s += i->toString();
+    }
+    return s;
+}
+
+toString(BlockStmt) {
+    for (auto i : list) {
+        cout << "size of list " << list.size() << '\n';
         i->toString();
     }
 }
