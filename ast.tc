@@ -231,8 +231,9 @@ toString(BlockExpr) {
 }
 
 toString(BlockStmt) {
+    string s;
     for (auto i : list) {
-        cout << "size of list " << list.size() << '\n';
-        i->toString();
+        s+= i->toString();
     }
+    return s;
 }

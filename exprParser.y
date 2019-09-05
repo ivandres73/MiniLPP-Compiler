@@ -97,7 +97,7 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         BlockStmt *b = new BlockStmt(l);
         b->addStmt((Statement*)$8);
         $$ = b; }
-        //b->toString(); }
+        //cout << b->toString(); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
@@ -160,14 +160,14 @@ MORE_ARGUMENT:  "," kwVar Iden
 STATEMENTS: STATEMENTS STATEMENT Eol {
     StmtList l;
     BlockStmt *b = new BlockStmt(l);
+    $$ = b;
     b->addStmt((Statement*)$2); }
-    //cout << b->toString(); }
     | 
     ;
 
 STATEMENT: LVALUE "<-" EXPR
     | kwLlamar Iden OPT_FUNC
-    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); cout << $$->toString(); }
+    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); }
     | kwLea LVALUE
     | kwRetorne OPT_EXPR
     | SI_STMT
@@ -222,29 +222,29 @@ OPT_EXPR: EXPR
     |
     ;
 
-EXPR: TERM "=" EXPR  { $$ = new EquExpr((Expr*)$1, (Expr*)$2); }
-    | TERM "<>" EXPR { $$ = new NeqExpr((Expr*)$1, (Expr*)$2); }
-    | TERM "<=" EXPR { $$ = new LeqExpr((Expr*)$1, (Expr*)$2); }
-    | TERM ">=" EXPR { $$ = new GeqExpr((Expr*)$1, (Expr*)$2); }
-    | TERM "<" EXPR  { $$ = new LsrExpr((Expr*)$1, (Expr*)$2); }
-    | TERM ">" EXPR  { $$ = new GrtExpr((Expr*)$1, (Expr*)$2); }
+EXPR: TERM "=" EXPR  { $$ = new EquExpr((Expr*)$1, (Expr*)$3); }
+    | TERM "<>" EXPR { $$ = new NeqExpr((Expr*)$1, (Expr*)$3); }
+    | TERM "<=" EXPR { $$ = new LeqExpr((Expr*)$1, (Expr*)$3); }
+    | TERM ">=" EXPR { $$ = new GeqExpr((Expr*)$1, (Expr*)$3); }
+    | TERM "<" EXPR  { $$ = new LsrExpr((Expr*)$1, (Expr*)$3); }
+    | TERM ">" EXPR  { $$ = new GrtExpr((Expr*)$1, (Expr*)$3); }
     | TERM { $$ = $1; }
     ;
 
-TERM: TERM "+" TERM2 { $$ = new AddExpr((Expr*)$1, (Expr*)$2); }
-    | TERM "-" TERM2 { $$ = new SubExpr((Expr*)$1, (Expr*)$2); }
-    | TERM kwO TERM2 { $$ = new OrExpr((Expr*)$1, (Expr*)$2); }
+TERM: TERM "+" TERM2 { $$ = new AddExpr((Expr*)$1, (Expr*)$3); }
+    | TERM "-" TERM2 { $$ = new SubExpr((Expr*)$1, (Expr*)$3); }
+    | TERM kwO TERM2 { $$ = new OrExpr((Expr*)$1, (Expr*)$3); }
     | TERM2 { $$ = $1; }
     ;
 
-TERM2: TERM2 "*" TERM3  { $$ = new MulExpr((Expr*)$1, (Expr*)$2); }
-    | TERM2 "div" TERM3 { $$ = new DivExpr((Expr*)$1, (Expr*)$2); }
-    | TERM2 "mod" TERM3 { $$ = new ModExpr((Expr*)$1, (Expr*)$2); }
-    | TERM2 kwY TERM3   { $$ = new AndExpr((Expr*)$1, (Expr*)$2); }
+TERM2: TERM2 "*" TERM3  { $$ = new MulExpr((Expr*)$1, (Expr*)$3); }
+    | TERM2 "div" TERM3 { $$ = new DivExpr((Expr*)$1, (Expr*)$3); }
+    | TERM2 "mod" TERM3 { $$ = new ModExpr((Expr*)$1, (Expr*)$3); }
+    | TERM2 kwY TERM3   { $$ = new AndExpr((Expr*)$1, (Expr*)$3); }
     | TERM3             { $$ = $1; }
     ;
 
-TERM3: TERM3 "^" TERM4 { $$ = new PowExpr((Expr*)$1, (Expr*)$2); }
+TERM3: TERM3 "^" TERM4 { $$ = new PowExpr((Expr*)$1, (Expr*)$3); }
     | TERM4            { $$ = $1; }
     ;
 
