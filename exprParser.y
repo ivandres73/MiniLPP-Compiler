@@ -96,8 +96,8 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         StmtList l;
         BlockStmt *b = new BlockStmt(l);
         b->addStmt((Statement*)$8);
-        $$ = b; }
-        //cout << b->toString(); }
+        $$ = b;
+        cout << b->toString(); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
@@ -207,11 +207,12 @@ ARGS: ARG MORE_ARGS {
     ExprList l;
     BlockExpr *b = new BlockExpr(l);
     b->addExpr((Expr*)$1);
+    if ($2 != nullptr) b->addExpr((Expr*)$2);
     $$ = b; }
     ;
 
-MORE_ARGS: "," ARG MORE_ARGS {}
-    |
+MORE_ARGS: "," ARG MORE_ARGS { $$ = $2; }
+    | { $$ = nullptr; }
     ;
 
 ARG: String { $$ = new StringExpr(getText()); }
