@@ -201,7 +201,9 @@ toString(StringExpr) {
 }
 
 toString(CharExpr) {
-    return "" + value;
+    string s = "";
+    s += value;
+    return s;
 }
 
 toString(BoolExpr) {
@@ -233,7 +235,8 @@ toString(BlockExpr) {
 toString(BlockStmt) {
     string s;
     for (auto i : list) {
-        s+= i->toString();
+        s += i->toString();
+        s += '\n';
     }
     return s;
 }

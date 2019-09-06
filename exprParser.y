@@ -161,8 +161,9 @@ STATEMENTS: STATEMENTS STATEMENT Eol {
     StmtList l;
     BlockStmt *b = new BlockStmt(l);
     $$ = b;
-    b->addStmt((Statement*)$2); }
-    | 
+    b->addStmt((Statement*)$2); 
+    if ($1 != nullptr) b->addStmt((Statement*)$1); }
+    | { $$ = nullptr; }
     ;
 
 STATEMENT: LVALUE "<-" EXPR
@@ -211,7 +212,12 @@ ARGS: ARG MORE_ARGS {
     $$ = b; }
     ;
 
-MORE_ARGS: "," ARG MORE_ARGS { $$ = $2; }
+MORE_ARGS: "," ARG MORE_ARGS {
+    ExprList l;
+    BlockExpr *b = new BlockExpr(l);
+    b->addExpr((Expr*)$2);
+    $$ = b;
+    if ($3 != nullptr) b->addExpr((Expr*)$3); }
     | { $$ = nullptr; }
     ;
 
