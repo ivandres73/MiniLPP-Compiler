@@ -161,16 +161,16 @@ STATEMENTS: STATEMENTS STATEMENT Eol {
     StmtList l;
     BlockStmt *b = new BlockStmt(l);
     $$ = b;
-    b->addStmt((Statement*)$2); 
-    if ($1 != nullptr) b->addStmt((Statement*)$1); }
+    if ($1 != nullptr) b->addStmt((Statement*)$1);
+    b->addStmt((Statement*)$2); }
     | { $$ = nullptr; }
     ;
 
-STATEMENT: LVALUE "<-" EXPR
+STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
     | kwLlamar Iden OPT_FUNC
     | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); }
     | kwLea LVALUE
-    | kwRetorne OPT_EXPR
+    | kwRetorne OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
     | SI_STMT
     | kwMientras EXPR OPT_EOL kwHaga Eol STATEMENT_1 kwFin kwMientras
     | kwRepita Eol STATEMENT_1 kwHasta EXPR
@@ -191,8 +191,11 @@ OPT_SINOSI2: kwSi EXPR OPT_EOL kwEntonces STATEMENT_1
     | STATEMENT_1
     ;
 
-LVALUE: Iden
-    | Iden "[" EXPR "]"
+LVALUE: Iden LVALUE_p { $$ = new IdenExpr(getText()); }
+    ;
+
+LVALUE_p: "[" EXPR "]"
+    |
     ;
 
 OPT_FUNC: "(" OPT_EXPRS ")"
@@ -225,8 +228,8 @@ ARG: String { $$ = new StringExpr(getText()); }
     | EXPR { $$ = $1; }
     ;
 
-OPT_EXPR: EXPR
-    |
+OPT_EXPR: EXPR { $$ = $1; }
+    | { $$ = nullptr; }
     ;
 
 EXPR: TERM "=" EXPR  { $$ = new EquExpr((Expr*)$1, (Expr*)$3); }

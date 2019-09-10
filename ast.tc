@@ -66,7 +66,7 @@
     int value;
 }
 %node IdenExpr Expr = {
-    char *var_name;
+    string var_name;
 }
 %node BlockExpr Expr = {
     ExprList list;
@@ -107,6 +107,9 @@ addStmt(BlockStmt) {
     Expr *expr;
     StmtList true_block;
     StmtList false_block;
+}
+%node returnStmt Statement = {
+    Expr *expr;
 }
 
 %operation %virtual string toString(ASTNode *this)
@@ -222,6 +225,14 @@ toString(assignStmt) {
 
 toString(ifStmt) {
     return "si ";
+}
+
+toString(returnStmt) {
+    string s("retorne");
+    if (expr != nullptr) {
+        s += " " + expr->toString();
+    }
+    return s;
 }
 
 toString(BlockExpr) {
