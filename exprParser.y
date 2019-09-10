@@ -44,15 +44,15 @@
 %token NotEq "<>"
 %token leEqu "<="
 %token grEqu ">="
-%token kwEntero
+%token kwEntero "entero"
 %token kwReal
 %token kwCadena
-%token kwBooleano
-%token kwCaracter
-%token kwArreglo
-%token kwDe
-%token kwFuncion
-%token kwProcedimiento
+%token kwBooleano "boolean"
+%token kwCaracter "caracter"
+%token kwArreglo "arreglo"
+%token kwDe "de"
+%token kwFuncion "funcion"
+%token kwProcedimiento "procedimiento"
 %token kwVar
 %token kwInicio
 %token kwFin
@@ -107,13 +107,13 @@ SUBTYPE-DECL: SUBTYPE-DECL kwTipo "iden" kwEs TYPE Eol
     |
     ;
 
-TYPE: kwEntero
-    | kwBooleano
-    | kwCaracter
+TYPE: "entero"
+    | "boolean"
+    | "caracter"
     | ARRAY-TYPE
     ;
 
-ARRAY-TYPE: kwArreglo "[" "num" "]" kwDe TYPE
+ARRAY-TYPE: "arreglo" "[" "num" "]" "de" TYPE
     ;
 
 VARIABLE-SEC: VARIABLE-DECL
@@ -138,10 +138,10 @@ SUBPROGRAM-HEADER: FUNC-HEADER
     | PROC-HEADER
     ;
 
-FUNC-HEADER: kwFuncion "iden" ARGUMENT-DECLS ":" TYPE
+FUNC-HEADER: "funcion" "iden" ARGUMENT-DECLS ":" TYPE
     ;
 
-PROC-HEADER: kwProcedimiento "iden" ARGUMENT-DECLS
+PROC-HEADER: "procedimiento" "iden" ARGUMENT-DECLS
     ;
 
 ARGUMENT-DECLS: "(" ARGUMENT-DECL ")"
