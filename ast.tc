@@ -111,6 +111,12 @@ addStmt(BlockStmt) {
 %node returnStmt Statement = {
     Expr *expr;
 }
+%node readStmt Statement = {
+    string lval;
+}
+%node callStmt Statement = {
+    string id;
+}
 
 %operation %virtual string toString(ASTNode *this)
 
@@ -249,5 +255,18 @@ toString(BlockStmt) {
         s += i->toString();
         s += '\n';
     }
+    return s;
+}
+
+toString(readStmt) {
+    string s("lea ");
+    s += lval;
+    cout << "lval " << lval << '\n';
+    return s;
+}
+
+toString(callStmt) {
+    string s("llamar ");
+    s += id;
     return s;
 }

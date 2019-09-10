@@ -19,10 +19,10 @@
 
 %}
 
-%token Num
-%token Char
-%token String
-%token Iden
+%token Num "num"
+%token Char "char"
+%token String "string"
+%token Iden "iden"
 %token opAdd "+"
 %token opMul "*"
 %token opDiv "div"
@@ -103,7 +103,7 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
 SUBTYPES-SEC: SUBTYPE-DECL
     ;
 
-SUBTYPE-DECL: SUBTYPE-DECL kwTipo Iden kwEs TYPE Eol
+SUBTYPE-DECL: SUBTYPE-DECL kwTipo "iden" kwEs TYPE Eol
     |
     ;
 
@@ -113,7 +113,7 @@ TYPE: kwEntero
     | ARRAY-TYPE
     ;
 
-ARRAY-TYPE: kwArreglo "[" Num "]" kwDe TYPE
+ARRAY-TYPE: kwArreglo "[" "num" "]" kwDe TYPE
     ;
 
 VARIABLE-SEC: VARIABLE-DECL
@@ -123,10 +123,10 @@ VARIABLE-DECL: VARIABLE-DECL TYPE ID_1 Eol
     |
     ;
 
-ID_1: Iden IDS
+ID_1: "iden" IDS
     ;
 
-IDS: IDS "," Iden
+IDS: IDS "," "iden"
     |
     ;
 
@@ -138,22 +138,22 @@ SUBPROGRAM-HEADER: FUNC-HEADER
     | PROC-HEADER
     ;
 
-FUNC-HEADER: kwFuncion Iden ARGUMENT-DECLS ":" TYPE
+FUNC-HEADER: kwFuncion "iden" ARGUMENT-DECLS ":" TYPE
     ;
 
-PROC-HEADER: kwProcedimiento Iden ARGUMENT-DECLS
+PROC-HEADER: kwProcedimiento "iden" ARGUMENT-DECLS
     ;
 
 ARGUMENT-DECLS: "(" ARGUMENT-DECL ")"
     |
     ;
 
-ARGUMENT-DECL: kwVar TYPE Iden MORE_ARGUMENT
-    | TYPE Iden MORE_ARGUMENT
+ARGUMENT-DECL: kwVar TYPE "iden" MORE_ARGUMENT
+    | TYPE "iden" MORE_ARGUMENT
     ;
 
-MORE_ARGUMENT:  "," kwVar Iden
-    | "," TYPE Iden
+MORE_ARGUMENT:  "," kwVar "iden"
+    | "," TYPE "iden"
     |
     ;
 
@@ -167,9 +167,9 @@ STATEMENTS: STATEMENTS STATEMENT Eol {
     ;
 
 STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
-    | kwLlamar Iden OPT_FUNC
+    | kwLlamar "iden" OPT_FUNC { $$ = new callStmt("default id"); }
     | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); }
-    | kwLea LVALUE
+    | kwLea LVALUE { $$ = new readStmt(((IdenExpr*)$2)->var_name); }
     | kwRetorne OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
     | SI_STMT
     | kwMientras EXPR OPT_EOL kwHaga Eol STATEMENT_1 kwFin kwMientras
@@ -191,7 +191,7 @@ OPT_SINOSI2: kwSi EXPR OPT_EOL kwEntonces STATEMENT_1
     | STATEMENT_1
     ;
 
-LVALUE: Iden LVALUE_p { $$ = new IdenExpr(getText()); }
+LVALUE: "iden" LVALUE_p { $$ = new IdenExpr(getText()); }
     ;
 
 LVALUE_p: "[" EXPR "]"
@@ -224,7 +224,7 @@ MORE_ARGS: "," ARG MORE_ARGS {
     | { $$ = nullptr; }
     ;
 
-ARG: String { $$ = new StringExpr(getText()); }
+ARG: "string" { $$ = new StringExpr(getText()); }
     | EXPR { $$ = $1; }
     ;
 
@@ -263,17 +263,17 @@ TERM4: kwNo FACTOR { $$ = new NotExpr((Expr*)$2); }
     | FACTOR       { $$ = $1; }
     ;
 
-FACTOR: Num        { $$ = new NumExpr(stoi(getText())); }
-    | Char         { $$ = new CharExpr(getText()[0]);}
+FACTOR: "num"        { $$ = new NumExpr(stoi(getText())); }
+    | "char"         { $$ = new CharExpr(getText()[0]); }
     | BOOL         { $$ = $1; }
     | "(" EXPR ")" { $$ = $2; }
     | RVALUE       { $$ = $1; }
     ;
 
-RVALUE: Iden RVALUE2
+RVALUE: "iden" RVALUE2
     ;
 
-RVALUE2: "[" Num "]"
+RVALUE2: "[" "num" "]"
     | OPT_FUNC
     ;
 
