@@ -53,28 +53,28 @@
 %token kwDe "de"
 %token kwFuncion "funcion"
 %token kwProcedimiento "procedimiento"
-%token kwVar
-%token kwInicio
-%token kwFin
-%token kwFinal
-%token kwSi
-%token kwEntonces
-%token kwSino
-%token kwPara
-%token kwMientras
-%token kwHaga
-%token kwLlamar
-%token kwRepita
-%token kwHasta
+%token kwVar "var"
+%token kwInicio "inicio"
+%token kwFin "fin"
+%token kwFinal "final"
+%token kwSi "si"
+%token kwEntonces "entonces"
+%token kwSino "sino"
+%token kwPara "para"
+%token kwMientras "mientras"
+%token kwHaga "haga"
+%token kwLlamar "llamar"
+%token kwRepita "repita"
+%token kwHasta "hasta"
 %token kwCaso
-%token kwO
-%token kwY
-%token kwNo
-%token kwLea
-%token kwEscriba
-%token kwRetorne
-%token kwTipo
-%token kwEs
+%token kwO "o"
+%token kwY "y"
+%token kwNo "no"
+%token kwLea "lea"
+%token kwEscriba "escriba"
+%token kwRetorne "retorne"
+%token kwTipo "tipo"
+%token kwEs "es"
 %token kwRegistro
 %token kwArchivo
 %token kwSecuencial
@@ -85,8 +85,8 @@
 %token kwCerrar
 %token kwLeer
 %token kwEscribir
-%token kwVerdadero
-%token kwFalso
+%token kwVerdadero "verdadero"
+%token kwFalso "falso"
 %token Eof
 
 %%
@@ -103,7 +103,7 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
 SUBTYPES-SEC: SUBTYPE-DECL
     ;
 
-SUBTYPE-DECL: SUBTYPE-DECL kwTipo "iden" kwEs TYPE Eol
+SUBTYPE-DECL: SUBTYPE-DECL "tipo" "iden" "es" TYPE Eol
     |
     ;
 
@@ -130,7 +130,7 @@ IDS: IDS "," "iden"
     |
     ;
 
-SUBPROGRAM-DECL: SUBPROGRAM-DECL SUBPROGRAM-HEADER Eol VARIABLE-SEC kwInicio OPT_EOL STATEMENTS kwFin Eol
+SUBPROGRAM-DECL: SUBPROGRAM-DECL SUBPROGRAM-HEADER Eol VARIABLE-SEC kwInicio OPT_EOL STATEMENTS "fin" Eol
     |
     ;
 
@@ -148,11 +148,11 @@ ARGUMENT-DECLS: "(" ARGUMENT-DECL ")"
     |
     ;
 
-ARGUMENT-DECL: kwVar TYPE "iden" MORE_ARGUMENT
+ARGUMENT-DECL: "var" TYPE "iden" MORE_ARGUMENT
     | TYPE "iden" MORE_ARGUMENT
     ;
 
-MORE_ARGUMENT:  "," kwVar "iden"
+MORE_ARGUMENT:  "," "var" "iden"
     | "," TYPE "iden"
     |
     ;
@@ -167,27 +167,27 @@ STATEMENTS: STATEMENTS STATEMENT Eol {
     ;
 
 STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
-    | kwLlamar "iden" OPT_FUNC { $$ = new callStmt("default id"); }
-    | kwEscriba ARGS { $$ = new printStmt((BlockExpr*)$2); }
-    | kwLea LVALUE { $$ = new readStmt(((IdenExpr*)$2)->var_name); }
-    | kwRetorne OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
+    | "llamar" "iden" OPT_FUNC { $$ = new callStmt("default id"); }
+    | "escriba" ARGS { $$ = new printStmt((BlockExpr*)$2); }
+    | "lea" LVALUE { $$ = new readStmt(((IdenExpr*)$2)->var_name); }
+    | "retorne" OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
     | SI_STMT
-    | kwMientras EXPR OPT_EOL kwHaga Eol STATEMENT_1 kwFin kwMientras
-    | kwRepita Eol STATEMENT_1 kwHasta EXPR
-    | kwPara LVALUE "<-" EXPR kwHasta EXPR kwHaga Eol STATEMENT_1 kwFin kwPara
+    | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras"
+    | "repita" Eol STATEMENT_1 "hasta" EXPR
+    | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para"
     ;
 
 STATEMENT_1: STATEMENT Eol STATEMENTS
     ;
 
-SI_STMT: kwSi EXPR OPT_EOL kwEntonces OPT_EOL STATEMENT_1 OPT_SINOSI kwFin kwSi
+SI_STMT: kwSi EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" kwSi
     ;
 
-OPT_SINOSI: kwSino OPT_SINOSI2
+OPT_SINOSI: "sino" OPT_SINOSI2
     |
     ;
 
-OPT_SINOSI2: kwSi EXPR OPT_EOL kwEntonces STATEMENT_1
+OPT_SINOSI2: kwSi EXPR OPT_EOL "entonces" STATEMENT_1
     | STATEMENT_1
     ;
 
@@ -243,14 +243,14 @@ EXPR: TERM "=" EXPR  { $$ = new EquExpr((Expr*)$1, (Expr*)$3); }
 
 TERM: TERM "+" TERM2 { $$ = new AddExpr((Expr*)$1, (Expr*)$3); }
     | TERM "-" TERM2 { $$ = new SubExpr((Expr*)$1, (Expr*)$3); }
-    | TERM kwO TERM2 { $$ = new OrExpr((Expr*)$1, (Expr*)$3); }
+    | TERM "o" TERM2 { $$ = new OrExpr((Expr*)$1, (Expr*)$3); }
     | TERM2 { $$ = $1; }
     ;
 
 TERM2: TERM2 "*" TERM3  { $$ = new MulExpr((Expr*)$1, (Expr*)$3); }
     | TERM2 "div" TERM3 { $$ = new DivExpr((Expr*)$1, (Expr*)$3); }
     | TERM2 "mod" TERM3 { $$ = new ModExpr((Expr*)$1, (Expr*)$3); }
-    | TERM2 kwY TERM3   { $$ = new AndExpr((Expr*)$1, (Expr*)$3); }
+    | TERM2 "y" TERM3   { $$ = new AndExpr((Expr*)$1, (Expr*)$3); }
     | TERM3             { $$ = $1; }
     ;
 
@@ -258,7 +258,7 @@ TERM3: TERM3 "^" TERM4 { $$ = new PowExpr((Expr*)$1, (Expr*)$3); }
     | TERM4            { $$ = $1; }
     ;
 
-TERM4: kwNo FACTOR { $$ = new NotExpr((Expr*)$2); }
+TERM4: "no" FACTOR { $$ = new NotExpr((Expr*)$2); }
     | "-" FACTOR   { $$ = new NegExpr((Expr*)$2); }
     | FACTOR       { $$ = $1; }
     ;
@@ -281,12 +281,12 @@ OPT_EOL: Eol
     |
     ;
 
-BOOL: kwVerdadero { $$ = new BoolExpr(true); }
-    | kwFalso     { $$ = new BoolExpr(false); }
+BOOL: "verdadero" { $$ = new BoolExpr(true); }
+    | "falso"     { $$ = new BoolExpr(false); }
     ;
 
-FIN: kwFin
-    |kwFinal
+FIN: "fin"
+    |"final"
     ;
 
 %%
