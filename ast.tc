@@ -261,7 +261,6 @@ toString(BlockStmt) {
 toString(readStmt) {
     string s("lea ");
     s += lval;
-    cout << "lval " << lval << '\n';
     return s;
 }
 

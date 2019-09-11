@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstring> // for memmove() and memset()
 #include "build/Tokens.h"
+#include "build/ast.h"
 
 using std::cout;
 using std::endl;

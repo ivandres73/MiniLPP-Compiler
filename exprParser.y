@@ -191,7 +191,7 @@ OPT_SINOSI2: kwSi EXPR OPT_EOL "entonces" STATEMENT_1
     | STATEMENT_1
     ;
 
-LVALUE: "iden" LVALUE_p { $$ = new IdenExpr(getText()); }
+LVALUE: "iden" LVALUE_p { $$ = $1; }
     ;
 
 LVALUE_p: "[" EXPR "]"

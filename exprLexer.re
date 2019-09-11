@@ -107,7 +107,7 @@ yytokentype exprLexer::getNextToken() {
             'Escribir'            {return makeToken(kwEscribir);}
             'Verdadero'           {return makeToken(kwVerdadero);}
             'Falso'               {return makeToken(kwFalso);}
-            iden(iden|digit)*     {return makeToken(Iden);}
+            iden(iden|digit)*     {yylval = new IdenExpr(ctx.tokenText(Iden)); return Iden;}
             "\x00"                {return makeToken(Eof);}
         */
     }
