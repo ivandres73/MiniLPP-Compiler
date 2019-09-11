@@ -117,29 +117,21 @@ addStmt(BlockStmt) {
 %node callStmt Statement = {
     string id;
 }
+%node whileStmt Statement = {
+    Expr *expr;
+    BlockStmt *block;
+}
 
 %operation %virtual string toString(ASTNode *this)
 
 %operation %virtual string getString(StringExpr*)
 %operation %virtual char getChar(CharExpr*)
 %operation %virtual bool getBool(BoolExpr*)
-getString(StringExpr) {
-    return value;
-}
-getChar(CharExpr) {
-    return value;
-}
-getBool(BoolExpr) {
-    return value;
-}
-
-toString(IdenExpr) {
-    return var_name;
-}
-
-toString(NumExpr) {
-    return std::to_string(value);
-}
+getString(StringExpr) { return value; }
+getChar(CharExpr) { return value; }
+getBool(BoolExpr) { return value; }
+toString(IdenExpr) { return var_name; }
+toString(NumExpr) { return std::to_string(value); }
 
 toString(AddExpr) {
     return expr1->toString() + " + " + expr2->toString();
@@ -205,9 +197,7 @@ toString(NegExpr) {
     return "-" + expr->toString();
 }
 
-toString(StringExpr) {
-    return value;
-}
+toString(StringExpr) { return value; }
 
 toString(CharExpr) {
     string s = "";
@@ -215,9 +205,7 @@ toString(CharExpr) {
     return s;
 }
 
-toString(BoolExpr) {
-    return value ? "Verdadero" : "Falso";
-}
+toString(BoolExpr) { return value ? "Verdadero" : "Falso"; }
 
 toString(printStmt) {
     string s("Escriba ");
@@ -267,5 +255,14 @@ toString(readStmt) {
 toString(callStmt) {
     string s("llamar ");
     s += id;
+    return s;
+}
+
+toString(whileStmt) {
+    string s("mientras ");
+    s += expr->toString();
+    s += " haga\n";
+    s += block->toString();
+    s += "\nfin mientras";
     return s;
 }
