@@ -224,7 +224,7 @@ MORE_ARGS: "," ARG MORE_ARGS {
     | { $$ = nullptr; }
     ;
 
-ARG: "string" { $$ = new StringExpr(getText()); }
+ARG: "string" { $$ = $1; }
     | EXPR { $$ = $1; }
     ;
 

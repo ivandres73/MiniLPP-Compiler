@@ -4,7 +4,7 @@
     digit  = [0-9];
     number = digit+;
     hex    = [a-fA-F];
-    string = .+;
+    string = [^(\"\n)]+;
     iden   = [_a-zA-Z];
     spec   = [a-zA-Z_-")""(""*"&"^"%$#@!`~number \t\n];//for block comments
 */  
@@ -44,7 +44,7 @@ yytokentype exprLexer::getNextToken() {
             '0x'(hex|digit)+      {return makeToken(Num);}
             '0x'([a-zA-Z]|digit)+ {return makeToken(Error);}
             "'"."'"|"'''"         {return makeToken(Char);}
-            "\""string"\""        {return makeToken(String);}
+            "\""string"\""        {yylval = new StringExpr(ctx.tokenText(String)); return String;}
             "+"                   {return makeToken(opAdd);}
             "*"                   {return makeToken(opMul);}
             "-"                   {return makeToken(opSub);}
