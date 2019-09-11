@@ -174,7 +174,7 @@ STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Ex
     | SI_STMT
     | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" { $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
     | "repita" Eol STATEMENT_1 "hasta" EXPR { $$ = new doStmt((BlockStmt*)$3, (Expr*)$5); }
-    | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para"
+    | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para" { $$ = new forStmt(((IdenExpr*)$2)->var_name, (Expr*)$4, (Expr*)$6, (BlockStmt*)$9); }
     ;
 
 STATEMENT_1: STATEMENT Eol STATEMENTS {

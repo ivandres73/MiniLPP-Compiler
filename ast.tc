@@ -125,6 +125,12 @@ addStmt(BlockStmt) {
     BlockStmt *b;
     Expr *expr;
 }
+%node forStmt Statement = {
+    string id;
+    Expr *init_expr;
+    Expr *fin_expr;
+    BlockStmt *block;
+}
 
 %operation %virtual string toString(ASTNode *this)
 
@@ -275,5 +281,18 @@ toString(doStmt) {
     string s("repita\n");
     s += b->toString();
     s += "hasta " + expr->toString();
+    return s;
+}
+
+toString(forStmt) {
+    string s("para ");
+    s += id;
+    s += " <- ";
+    s += init_expr->toString();
+    s += " hasta ";
+    s += fin_expr->toString();
+    s += " haga\n";
+    s += block->toString();
+    s += "\nfin para";
     return s;
 }
