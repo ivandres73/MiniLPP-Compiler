@@ -172,9 +172,8 @@ STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Ex
     | "lea" LVALUE { $$ = new readStmt(((IdenExpr*)$2)->var_name); }
     | "retorne" OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
     | SI_STMT
-    | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" {
-        $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
-    | "repita" Eol STATEMENT_1 "hasta" EXPR
+    | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" { $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
+    | "repita" Eol STATEMENT_1 "hasta" EXPR { $$ = new doStmt((BlockStmt*)$3, (Expr*)$5); }
     | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para"
     ;
 
@@ -182,8 +181,8 @@ STATEMENT_1: STATEMENT Eol STATEMENTS {
         StmtList l;
         BlockStmt *b = new BlockStmt(l);
         $$ = b;
-        if ($3 != nullptr) b->addStmt((Statement*)$3);
-        b->addStmt((Statement*)$1); }
+        b->addStmt((Statement*)$1);
+        if ($3 != nullptr) b->addStmt((Statement*)$3); }
     ;
 
 SI_STMT: kwSi EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" kwSi

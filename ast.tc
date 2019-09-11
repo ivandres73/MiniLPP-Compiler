@@ -121,6 +121,10 @@ addStmt(BlockStmt) {
     Expr *expr;
     BlockStmt *block;
 }
+%node doStmt Statement = {
+    BlockStmt *b;
+    Expr *expr;
+}
 
 %operation %virtual string toString(ASTNode *this)
 
@@ -264,5 +268,12 @@ toString(whileStmt) {
     s += " haga\n";
     s += block->toString();
     s += "\nfin mientras";
+    return s;
+}
+
+toString(doStmt) {
+    string s("repita\n");
+    s += b->toString();
+    s += "hasta " + expr->toString();
     return s;
 }
