@@ -211,15 +211,15 @@ STATEMENT_1: STATEMENT Eol STATEMENTS {
         if ($3 != nullptr) b->addStmt((Statement*)$3); }
     ;
 
-SI_STMT: kwSi EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" kwSi
+SI_STMT: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" "si"
     ;
 
 OPT_SINOSI: "sino" OPT_SINOSI2
     |
     ;
 
-OPT_SINOSI2: kwSi EXPR OPT_EOL "entonces" STATEMENT_1
-    | STATEMENT_1
+OPT_SINOSI2: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI
+    | OPT_EOL STATEMENT_1
     ;
 
 LVALUE: "iden" LVALUE_p { $$ = $1; }
