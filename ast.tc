@@ -22,10 +22,23 @@
     class Expr;
     using ExprList = vector<Expr*>;
 
+    union val {
+        char car;
+        bool boo;
+        int num;
+    };
+
+    struct val_info {
+        string scope;//global, gcd, etc etc
+        uint8_t type;//0 char, 1 bool, 2 num
+        val value;
+        uint8_t getType() { return type; }
+    };
 
     struct Context {
-        std::unordered_map<string, int> vars;
+        std::unordered_map<string, val_info> vars;
     };
+
     class Statement;
     using StmtList = list<Statement*>;
 %}
@@ -131,8 +144,12 @@ addStmt(BlockStmt) {
     Expr *fin_expr;
     BlockStmt *block;
 }
+%node declStmt Statement = {
+    string type;
+    BlockExpr *ids;
+}
 
-%operation %virtual string toString(ASTNode *this)
+%operation %virtual string toString(ASTNode *this, Context &ctx)
 
 %operation %virtual string getString(StringExpr*)
 %operation %virtual char getChar(CharExpr*)
@@ -144,67 +161,67 @@ toString(IdenExpr) { return var_name; }
 toString(NumExpr) { return std::to_string(value); }
 
 toString(AddExpr) {
-    return expr1->toString() + " + " + expr2->toString();
+    return expr1->toString(ctx) + " + " + expr2->toString(ctx);
 }
 
 toString(SubExpr) {
-    return expr1->toString() + " - " + expr2->toString();
+    return expr1->toString(ctx) + " - " + expr2->toString(ctx);
 }
 
 toString(MulExpr) {
-    return expr1->toString() + " * " + expr2->toString();
+    return expr1->toString(ctx) + " * " + expr2->toString(ctx);
 }
 
 toString(PowExpr) {
-    return expr1->toString() + " ^ " + expr2->toString();
+    return expr1->toString(ctx) + " ^ " + expr2->toString(ctx);
 }
 
 toString(DivExpr) {
-    return expr1->toString() + " div " + expr2->toString();
+    return expr1->toString(ctx) + " div " + expr2->toString(ctx);
 }
 
 toString(ModExpr) {
-    return expr1->toString() + " mod " + expr2->toString();
+    return expr1->toString(ctx) + " mod " + expr2->toString(ctx);
 }
 
 toString(EquExpr) {
-    return expr1->toString() + " = " + expr2->toString();
+    return expr1->toString(ctx) + " = " + expr2->toString(ctx);
 }
 
 toString(NeqExpr) {
-    return expr1->toString() + " <> " + expr2->toString();
+    return expr1->toString(ctx) + " <> " + expr2->toString(ctx);
 }
 
 toString(GrtExpr) {
-    return expr1->toString() + " > " + expr2->toString();
+    return expr1->toString(ctx) + " > " + expr2->toString(ctx);
 }
 
 toString(LsrExpr) {
-    return expr1->toString() + " < " + expr2->toString();
+    return expr1->toString(ctx) + " < " + expr2->toString(ctx);
 }
 
 toString(GeqExpr) {
-    return expr1->toString() + " >= " + expr2->toString();
+    return expr1->toString(ctx) + " >= " + expr2->toString(ctx);
 }
 
 toString(LeqExpr) {
-    return expr1->toString() + " <= " + expr2->toString();
+    return expr1->toString(ctx) + " <= " + expr2->toString(ctx);
 }
 
 toString(OrExpr) {
-    return expr1->toString() + " o " + expr2->toString();
+    return expr1->toString(ctx) + " o " + expr2->toString(ctx);
 }
 
 toString(AndExpr) {
-    return expr1->toString() + " y " + expr2->toString();
+    return expr1->toString(ctx) + " y " + expr2->toString(ctx);
 }
 
 toString(NotExpr) {
-    return "no " + expr->toString();
+    return "no " + expr->toString(ctx);
 }
 
 toString(NegExpr) {
-    return "-" + expr->toString();
+    return "-" + expr->toString(ctx);
 }
 
 toString(StringExpr) { return value; }
@@ -219,12 +236,12 @@ toString(BoolExpr) { return value ? "Verdadero" : "Falso"; }
 
 toString(printStmt) {
     string s("Escriba ");
-    s += args->toString();
+    s += args->toString(ctx);
     return s;
 }
 
 toString(assignStmt) {
-    return var_name + " <- " + expr->toString();
+    return var_name + " <- " + expr->toString(ctx);
 }
 
 toString(ifStmt) {
@@ -234,7 +251,7 @@ toString(ifStmt) {
 toString(returnStmt) {
     string s("retorne");
     if (expr != nullptr) {
-        s += " " + expr->toString();
+        s += " " + expr->toString(ctx);
     }
     return s;
 }
@@ -242,7 +259,7 @@ toString(returnStmt) {
 toString(BlockExpr) {
     string s;
     for (auto i : list) {
-        s += i->toString();
+        s += i->toString(ctx);
     }
     return s;
 }
@@ -250,7 +267,7 @@ toString(BlockExpr) {
 toString(BlockStmt) {
     string s;
     for (auto i : list) {
-        s += i->toString();
+        s += i->toString(ctx);
         s += '\n';
     }
     return s;
@@ -270,17 +287,17 @@ toString(callStmt) {
 
 toString(whileStmt) {
     string s("mientras ");
-    s += expr->toString();
+    s += expr->toString(ctx);
     s += " haga\n";
-    s += block->toString();
+    s += block->toString(ctx);
     s += "\nfin mientras";
     return s;
 }
 
 toString(doStmt) {
     string s("repita\n");
-    s += b->toString();
-    s += "hasta " + expr->toString();
+    s += b->toString(ctx);
+    s += "hasta " + expr->toString(ctx);
     return s;
 }
 
@@ -288,11 +305,17 @@ toString(forStmt) {
     string s("para ");
     s += id;
     s += " <- ";
-    s += init_expr->toString();
+    s += init_expr->toString(ctx);
     s += " hasta ";
-    s += fin_expr->toString();
+    s += fin_expr->toString(ctx);
     s += " haga\n";
-    s += block->toString();
+    s += block->toString(ctx);
     s += "\nfin para";
+    return s;
+}
+
+toString(declStmt) {
+    string s(type);
+    s += " " + ids->toString(ctx);
     return s;
 }

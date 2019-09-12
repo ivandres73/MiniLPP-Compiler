@@ -92,12 +92,14 @@
 %%
 
 PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN OPT_EOL
-    { 
+    {
+        Context ctx;
         StmtList l;
         BlockStmt *b = new BlockStmt(l);
+        if ($3 != nullptr) b->addStmt((BlockStmt*)$3);
         b->addStmt((Statement*)$8);
         $$ = b;
-        cout << b->toString(); }
+        cout << b->toString(ctx); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
@@ -107,27 +109,43 @@ SUBTYPE-DECL: SUBTYPE-DECL "tipo" "iden" "es" TYPE Eol
     |
     ;
 
-TYPE: "entero"
-    | "boolean"
-    | "caracter"
+TYPE: "entero" { $$ = new IdenExpr("entero"); }
+    | "boolean" { $$ = new IdenExpr("boolean"); }
+    | "caracter" { $$ = new IdenExpr("caracter"); }
     | ARRAY-TYPE
     ;
 
 ARRAY-TYPE: "arreglo" "[" "num" "]" "de" TYPE
     ;
 
-VARIABLE-SEC: VARIABLE-DECL
+VARIABLE-SEC: VARIABLE-DECL { $$ = $1; }
     ;
 
-VARIABLE-DECL: VARIABLE-DECL TYPE ID_1 Eol
-    |
+VARIABLE-DECL: VARIABLE-DECL TYPE ID_1 Eol {
+        StmtList l;
+        BlockStmt *b = new BlockStmt(l);
+        declStmt *d = new declStmt(((IdenExpr*)$2)->var_name, (BlockExpr*)$3);
+        if ($1 != nullptr) b->addStmt((BlockStmt*)$1);
+        b->addStmt(d);
+        $$ = b; }
+    | { $$ = nullptr; }
     ;
 
-ID_1: "iden" IDS
+ID_1: "iden" IDS {
+        ExprList l;
+        BlockExpr *b = new BlockExpr(l);
+        b->addExpr((IdenExpr*)$1);
+        if ($2 != nullptr) b->addExpr((BlockExpr*)$2);
+        $$ = b; }
     ;
 
-IDS: IDS "," "iden"
-    |
+IDS: IDS "," "iden" {
+        ExprList l;
+        BlockExpr *b = new BlockExpr(l);
+        if ($1 != nullptr) b->addExpr((BlockExpr*)$1);
+        b->addExpr((IdenExpr*)$3);
+        $$ = b; }
+    | { $$ = nullptr; }
     ;
 
 SUBPROGRAM-DECL: SUBPROGRAM-DECL SUBPROGRAM-HEADER Eol VARIABLE-SEC kwInicio OPT_EOL STATEMENTS "fin" Eol
@@ -158,23 +176,31 @@ MORE_ARGUMENT:  "," "var" "iden"
     ;
 
 STATEMENTS: STATEMENTS STATEMENT Eol {
-    StmtList l;
-    BlockStmt *b = new BlockStmt(l);
-    $$ = b;
-    if ($1 != nullptr) b->addStmt((Statement*)$1);
-    b->addStmt((Statement*)$2); }
-    | { $$ = nullptr; }
+        StmtList l;
+        BlockStmt *b = new BlockStmt(l);
+        $$ = b;
+        if ($1 != nullptr) b->addStmt((Statement*)$1);
+        b->addStmt((Statement*)$2); }
+        | { $$ = nullptr; }
     ;
 
-STATEMENT: LVALUE "<-" EXPR { $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
-    | "llamar" "iden" OPT_FUNC { $$ = new callStmt(((IdenExpr*)$2)->var_name); }
-    | "escriba" ARGS { $$ = new printStmt((BlockExpr*)$2); }
-    | "lea" LVALUE { $$ = new readStmt(((IdenExpr*)$2)->var_name); }
-    | "retorne" OPT_EXPR { $$ = new returnStmt((Expr*)$2); }
+STATEMENT: LVALUE "<-" EXPR {
+        $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
+    | "llamar" "iden" OPT_FUNC {
+        $$ = new callStmt(((IdenExpr*)$2)->var_name); }
+    | "escriba" ARGS {
+        $$ = new printStmt((BlockExpr*)$2); }
+    | "lea" LVALUE {
+        $$ = new readStmt(((IdenExpr*)$2)->var_name); }
+    | "retorne" OPT_EXPR {
+        $$ = new returnStmt((Expr*)$2); }
     | SI_STMT
-    | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" { $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
-    | "repita" Eol STATEMENT_1 "hasta" EXPR { $$ = new doStmt((BlockStmt*)$3, (Expr*)$5); }
-    | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para" { $$ = new forStmt(((IdenExpr*)$2)->var_name, (Expr*)$4, (Expr*)$6, (BlockStmt*)$9); }
+    | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" {
+        $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
+    | "repita" Eol STATEMENT_1 "hasta" EXPR {
+        $$ = new doStmt((BlockStmt*)$3, (Expr*)$5); }
+    | "para" LVALUE "<-" EXPR "hasta" EXPR "haga" Eol STATEMENT_1 "fin" "para" {
+        $$ = new forStmt(((IdenExpr*)$2)->var_name, (Expr*)$4, (Expr*)$6, (BlockStmt*)$9); }
     ;
 
 STATEMENT_1: STATEMENT Eol STATEMENTS {
@@ -213,19 +239,19 @@ OPT_EXPRS: OPT_EXPRS EXPR ","
     ;
 
 ARGS: ARG MORE_ARGS {
-    ExprList l;
-    BlockExpr *b = new BlockExpr(l);
-    b->addExpr((Expr*)$1);
-    if ($2 != nullptr) b->addExpr((Expr*)$2);
-    $$ = b; }
+        ExprList l;
+        BlockExpr *b = new BlockExpr(l);
+        b->addExpr((Expr*)$1);
+        if ($2 != nullptr) b->addExpr((Expr*)$2);
+        $$ = b; }
     ;
 
 MORE_ARGS: "," ARG MORE_ARGS {
-    ExprList l;
-    BlockExpr *b = new BlockExpr(l);
-    b->addExpr((Expr*)$2);
-    $$ = b;
-    if ($3 != nullptr) b->addExpr((Expr*)$3); }
+        ExprList l;
+        BlockExpr *b = new BlockExpr(l);
+        b->addExpr((Expr*)$2);
+        $$ = b;
+        if ($3 != nullptr) b->addExpr((Expr*)$3); }
     | { $$ = nullptr; }
     ;
 
@@ -268,8 +294,8 @@ TERM4: "no" FACTOR { $$ = new NotExpr((Expr*)$2); }
     | FACTOR       { $$ = $1; }
     ;
 
-FACTOR: "num"        { $$ = new NumExpr(stoi(getText())); }
-    | "char"         { $$ = new CharExpr(getText()[0]); }
+FACTOR: "num"      { $$ = new NumExpr(stoi(getText())); }
+    | "char"       { $$ = new CharExpr(getText()[0]); }
     | BOOL         { $$ = $1; }
     | "(" EXPR ")" { $$ = $2; }
     | RVALUE       { $$ = $1; }
