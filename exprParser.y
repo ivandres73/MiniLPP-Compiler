@@ -194,7 +194,7 @@ STATEMENT: LVALUE "<-" EXPR {
         $$ = new readStmt(((IdenExpr*)$2)->var_name); }
     | "retorne" OPT_EXPR {
         $$ = new returnStmt((Expr*)$2); }
-    | SI_STMT
+    | SI_STMT { $$ = $1; }
     | "mientras" EXPR OPT_EOL "haga" Eol STATEMENT_1 "fin" "mientras" {
         $$ = new whileStmt((Expr*)$2, (BlockStmt*)$6); }
     | "repita" Eol STATEMENT_1 "hasta" EXPR {
@@ -211,11 +211,12 @@ STATEMENT_1: STATEMENT Eol STATEMENTS {
         if ($3 != nullptr) b->addStmt((Statement*)$3); }
     ;
 
-SI_STMT: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" "si"
+SI_STMT: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" "si" {
+        $$ = new ifStmt((Expr*)$2, (BlockStmt*)$6, (BlockExpr*)$7); }
     ;
 
 OPT_SINOSI: "sino" OPT_SINOSI2
-    |
+    | { $$ = nullptr; }
     ;
 
 OPT_SINOSI2: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI
