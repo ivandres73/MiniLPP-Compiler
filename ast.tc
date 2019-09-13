@@ -119,9 +119,12 @@ addStmt(BlockStmt) {
 %node ifStmt Statement = {
     Expr *expr;
     BlockStmt *true_block;
-    BlockExpr *else_exprs;
-    //algo para los bloques;
-    //BlockStmt *false_block;
+    elseifBlock *elses;
+}
+%node elseifBlock ASTNode = {
+    ExprList *exprs;
+    StmtList *stmts;
+    BlockStmt *false_block;
 }
 %node returnStmt Statement = {
     Expr *expr;
@@ -245,14 +248,28 @@ toString(printStmt) {
 toString(assignStmt) {
     return var_name + " <- " + expr->toString(ctx);
 }
-
+// %node elseifBlock ASTNode = {
+//     ExprList *exprs;
+//     StmtList *stmts;
+//     BlockStmt *false_block;
+// }
 toString(ifStmt) {
     string s("si ");
     s += expr->toString(ctx);
     s += " entonces\n";
     s += true_block->toString(ctx);
+    if (elses != nullptr) {
+        if (elses->exprs == nullptr) {
+            s += "\nsino\n";
+            s += elses->false_block->toString(ctx);
+        }
+    }
     s += "fin si";
     return s;
+}
+
+toString(elseifBlock) {
+    return "soy elses";
 }
 
 toString(returnStmt) {

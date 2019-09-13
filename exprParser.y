@@ -212,15 +212,19 @@ STATEMENT_1: STATEMENT Eol STATEMENTS {
     ;
 
 SI_STMT: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI "fin" "si" {
-        $$ = new ifStmt((Expr*)$2, (BlockStmt*)$6, (BlockExpr*)$7); }
+        $$ = new ifStmt((Expr*)$2, (BlockStmt*)$6, (elseifBlock*)$7); }
     ;
 
-OPT_SINOSI: "sino" OPT_SINOSI2
+OPT_SINOSI: "sino" OPT_SINOSI2 { $$ = $2; }
     | { $$ = nullptr; }
     ;
 
-OPT_SINOSI2: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI
-    | OPT_EOL STATEMENT_1
+OPT_SINOSI2: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI {
+        ExprList el;
+        StmtList sl;
+        BlockStmt *bs = new BlockStmt(sl);
+        $$ = new elseifBlock(nullptr, nullptr, nullptr); }
+    | OPT_EOL STATEMENT_1 { $$ = new elseifBlock(nullptr, nullptr, (BlockStmt*)$2); }
     ;
 
 LVALUE: "iden" LVALUE_p { $$ = $1; }
