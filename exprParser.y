@@ -9,12 +9,13 @@
 
     int yylex();
     string getText();
+    string getLine();
 
     string filename;
 
     #define YYERROR_VERBOSE 1
     void yyerror(const char *msg) {
-        cout << filename << ": " << ": " << msg << '\n';
+        cout << filename << ":" << getLine() << ": " << msg << '\n';
     }
 
 %}
@@ -135,7 +136,7 @@ ID_1: "iden" IDS {
         ExprList l;
         BlockExpr *b = new BlockExpr(l);
         b->addExpr((IdenExpr*)$1);
-        if ($2 != nullptr) b->addExpr((BlockExpr*)$2);
+        if ($2 != nullptr) b->copyFrom((BlockExpr*)$2);
         $$ = b; }
     ;
 
@@ -185,7 +186,7 @@ STATEMENTS: STATEMENTS STATEMENT Eol {
     ;
 
 STATEMENT: LVALUE "<-" EXPR {
-        $$ = new assignStmt(((IdenExpr*)$1)->var_name ,(Expr*)$3); }
+        $$ = new assignStmt(((IdenExpr*)$1)->var_name, (Expr*)$3); }
     | "llamar" "iden" OPT_FUNC {
         $$ = new callStmt(((IdenExpr*)$2)->var_name); }
     | "escriba" ARGS {
@@ -220,11 +221,15 @@ OPT_SINOSI: "sino" OPT_SINOSI2 { $$ = $2; }
     ;
 
 OPT_SINOSI2: "si" EXPR OPT_EOL "entonces" OPT_EOL STATEMENT_1 OPT_SINOSI {
-        ExprList el;
-        StmtList sl;
-        BlockStmt *bs = new BlockStmt(sl);
-        $$ = new elseifBlock(nullptr, nullptr, nullptr); }
-    | OPT_EOL STATEMENT_1 { $$ = new elseifBlock(nullptr, nullptr, (BlockStmt*)$2); }
+        ifStmtList l;
+        l.push_back(new ifStmt((Expr*)$2, (BlockStmt*)$6, nullptr));
+        if ($7 != nullptr)
+            $$ = new elseifBlock(l, nullptr);
+        else
+            $$ = new elseifBlock(l, nullptr); }
+    | OPT_EOL STATEMENT_1 {
+        ifStmtList l;
+        $$ = new elseifBlock(l ,(BlockStmt*)$2); }
     ;
 
 LVALUE: "iden" LVALUE_p { $$ = $1; }
@@ -340,6 +345,10 @@ int yylex() {
 
 string getText() {
     return lex->getText();
+}
+
+string getLine() {
+    return std::to_string(lex->getLine());
 }
 
 int main(int argc, char* argv[]) {

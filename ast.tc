@@ -22,6 +22,9 @@
     class Expr;
     using ExprList = vector<Expr*>;
 
+    class ifStmt;
+    using ifStmtList = vector<ifStmt*>;
+
     union val {
         char car;
         bool boo;
@@ -86,8 +89,16 @@
 }
 
 %operation %virtual void addExpr(BlockExpr* this, Expr* e)
+%operation %virtual void copyFrom(BlockExpr* this, BlockExpr* src)
 addExpr(BlockExpr) {
     list.push_back(e);
+}
+copyFrom(BlockExpr) {
+    Context empty;
+    for (auto i : src->list) {
+        list.push_back(i);
+        //cout << i->toString(empty) << '\n';
+    }
 }
 
 %node StringExpr Expr = {
@@ -121,11 +132,15 @@ addStmt(BlockStmt) {
     BlockStmt *true_block;
     elseifBlock *elses;
 }
-%node elseifBlock ASTNode = {
-    ExprList *exprs;
-    StmtList *stmts;
+%node elseifBlock Statement = {
+    ifStmtList elseifs;
     BlockStmt *false_block;
 }
+%operation %virtual void addIfStmt(elseifBlock* this, ifStmt* is)
+addIfStmt(elseifBlock) {
+    elseifs.push_back(is);
+}
+
 %node returnStmt Statement = {
     Expr *expr;
 }
@@ -248,18 +263,14 @@ toString(printStmt) {
 toString(assignStmt) {
     return var_name + " <- " + expr->toString(ctx);
 }
-// %node elseifBlock ASTNode = {
-//     ExprList *exprs;
-//     StmtList *stmts;
-//     BlockStmt *false_block;
-// }
+
 toString(ifStmt) {
     string s("si ");
     s += expr->toString(ctx);
     s += " entonces\n";
     s += true_block->toString(ctx);
     if (elses != nullptr) {
-        if (elses->exprs == nullptr) {
+        if (elses->elseifs.empty()) {
             s += "\nsino\n";
             s += elses->false_block->toString(ctx);
         }
@@ -337,9 +348,26 @@ toString(forStmt) {
     s += "\nfin para";
     return s;
 }
+    // union val {
+    //     char car;
+    //     bool boo;
+    //     int num;
+    // };
 
+    // struct val_info {
+    //     string scope;//global, gcd, etc etc
+    //     uint8_t type;//0 char, 1 bool, 2 num
+    //     val value;
+    //     uint8_t getType() { return type; }
+    // };
 toString(declStmt) {
     string s(type);
     s += " " + ids->toString(ctx);
+    for (auto i : ids->list) {
+        //if (ctx.vars.find(((StringExpr*)i)->value) == ctx.vars.end()) {
+            cout << "escribo var " << i->toString(ctx) << '\n';
+            //vars.emplace();
+        //}
+    }
     return s;
 }

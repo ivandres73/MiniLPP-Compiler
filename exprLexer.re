@@ -37,7 +37,7 @@ yytokentype exprLexer::getNextToken() {
             [ \t]                 {continue;} //whitespaces
             "//"[^\n]*            {continue;} //line comments
             "/*"spec*"*""/"       {cout << "shie men\n"; continue;} //block comments
-            "\n"[ \t\n]*          {return makeToken(Eol);}
+            "\n"[ \t\n]*          {line++; return makeToken(Eol);}
             number                {return makeToken(Num);}
             '0b'[0-1]+            {return makeToken(Num);}
             '0b'number            {return makeToken(Error);}
