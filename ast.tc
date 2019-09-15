@@ -34,6 +34,7 @@
     struct val_info {
         string scope;//global, gcd, etc etc
         uint8_t type;//0 char, 1 bool, 2 num
+        bool init;
         val value;
         uint8_t getType() { return type; }
     };
@@ -357,17 +358,33 @@ toString(forStmt) {
     // struct val_info {
     //     string scope;//global, gcd, etc etc
     //     uint8_t type;//0 char, 1 bool, 2 num
+    //      bool init;
     //     val value;
     //     uint8_t getType() { return type; }
     // };
 toString(declStmt) {
     string s(type);
     s += " " + ids->toString(ctx);
+    string curr_var;
     for (auto i : ids->list) {
-        //if (ctx.vars.find(((StringExpr*)i)->value) == ctx.vars.end()) {
-            cout << "escribo var " << i->toString(ctx) << '\n';
-            //vars.emplace();
-        //}
+        curr_var = i->toString(ctx);
+        if (ctx.vars.find(curr_var) == ctx.vars.end()) {
+            val_info info;
+            info.value = val();
+            info.scope = string("global");
+            info.type = 0;
+            info.init = false;
+            if (type == "entero") {
+                info.type = 2;
+            } else if (type == "boolean") {
+                info.type = 1;
+            }
+            ctx.vars.emplace(curr_var, info);
+        } else
+        {
+            cout << curr_var << " ya existe\n";
+        }
+        
     }
     return s;
 }
