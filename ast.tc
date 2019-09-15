@@ -262,6 +262,20 @@ toString(printStmt) {
 }
 
 toString(assignStmt) {
+    if (ctx.vars.find(var_name) == ctx.vars.end()) {
+        std::cerr << "variable " + var_name + " no existe\n";
+        throw;
+    }
+    else if (ctx.vars.find(var_name)->second.type == 0) {
+        cout <<  "fui declarado como caracter\n";
+        CharExpr *ce = dynamic_cast<CharExpr*>(expr);
+        if (ce != 0)
+            ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
+        else {
+            cout << "can't assign " + expr->toString(ctx) + " to char\n";
+            throw;
+        }
+    }
     return var_name + " <- " + expr->toString(ctx);
 }
 
@@ -349,19 +363,7 @@ toString(forStmt) {
     s += "\nfin para";
     return s;
 }
-    // union val {
-    //     char car;
-    //     bool boo;
-    //     int num;
-    // };
 
-    // struct val_info {
-    //     string scope;//global, gcd, etc etc
-    //     uint8_t type;//0 char, 1 bool, 2 num
-    //      bool init;
-    //     val value;
-    //     uint8_t getType() { return type; }
-    // };
 toString(declStmt) {
     string s(type);
     s += " " + ids->toString(ctx);
