@@ -2,7 +2,7 @@
 
 %{
     #include "ast.h"
-
+    #include "cfg.h"
 %}
 
 %decls %{
@@ -300,12 +300,10 @@ toString(AndExpr) {
 }
 
 toString(NotExpr) {
-    checkVars(ctx);
     return "no " + expr->toString(ctx);
 }
 
 toString(NegExpr) {
-    checkVars(ctx);
     return "-" + expr->toString(ctx);
 }
 
@@ -337,6 +335,24 @@ toString(assignStmt) {
             ctx.vars.find(var_name)->second.init = true;
         } else {
             cout << "can't assign " + expr->toString(ctx) + " to char\n";
+            throw;
+        }
+    } else if (ctx.vars.find(var_name)->second.type == 2) {
+        CharExpr *ce = dynamic_cast<CharExpr*>(expr);
+        if (ce == 0) {
+            //ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
+            ctx.vars.find(var_name)->second.init = true;
+        } else {
+            cout << "can't assign '" + expr->toString(ctx) + "' to int\n";
+            throw;
+        }
+    } else if (ctx.vars.find(var_name)->second.type == 1) {
+        CharExpr *ce = dynamic_cast<CharExpr*>(expr);
+        if (ce == 0) {
+            //ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
+            ctx.vars.find(var_name)->second.init = true;
+        } else {
+            cout << "can't assign '" + expr->toString(ctx) + "' to boolean\n";
             throw;
         }
     }

@@ -1,0 +1,34 @@
+%option lang = "C++"
+%option state_type = "CFGNodeType"
+
+%decls %{
+
+%}
+
+%{
+    #include "cfg.h"
+%}
+
+%node CFGNode %abstract %typedef
+
+%node CFGExpr CFGNode %abstract
+
+%node CFGBinExpr CFGExpr %abstract
+%node CFGAddExpr CFGBinExpr
+%node CFGSubExpr CFGBinExpr
+%node CFGMulExpr CFGBinExpr
+%node CFGPowExpr CFGBinExpr
+%node CFGDivExpr CFGBinExpr
+%node CFGModExpr CFGBinExpr
+%node CFGEquExpr CFGBinExpr
+%node CFGNeqExpr CFGBinExpr
+%node CFGGrtExpr CFGBinExpr
+%node CFGLsrExpr CFGBinExpr
+%node CFGGeqExpr CFGBinExpr
+%node CFGLeqExpr CFGBinExpr
+%node CFGOrExpr  CFGBinExpr
+%node CFGAndExpr CFGBinExpr
+
+%node CFGOperand CFGExpr %abstract
+%node CFGNumOper CFGExpr
+%node CFGStackOp CFGExpr
