@@ -57,6 +57,54 @@
     Expr *expr1;
     Expr *expr2;
 }
+%operation %virtual bool checkVars(BinExpr*, Context& ctx)
+checkVars(BinExpr) {
+    CharExpr *c1 = dynamic_cast<CharExpr*>(expr1);
+    CharExpr *c2 = dynamic_cast<CharExpr*>(expr2);
+    if (c1 != 0 || c2 != 0) {
+        std::cerr << "no se puede efectuar operaciones con chars\n";
+        throw;
+    }
+
+    IdenExpr *ce1 = dynamic_cast<IdenExpr*>(expr1);
+    IdenExpr *ce2 = dynamic_cast<IdenExpr*>(expr2);
+
+    if (ce1 != 0) {
+        string name = ce1->var_name;
+        std::unordered_map<string, val_info>::const_iterator var = ctx.vars.find(name);
+        if (var != ctx.vars.end()) {
+            if (!var->second.init) {
+                cout << name << " no ha sido inicializada\n";
+                throw;
+            }
+            if (var->second.type == 0) {
+                std::cerr << "no se puede efectuar operaciones con chars\n";
+                throw;
+            }
+        } else {
+            cout << expr1->toString(ctx) << " no existe\n";
+            throw;
+        }
+    }
+
+    if (ce2 != 0 ) {
+        string name = ce2->var_name;
+        std::unordered_map<string, val_info>::const_iterator var = ctx.vars.find(name);
+        if (var != ctx.vars.end()) {
+            if (!var->second.init) {
+                cout << name << " no ha sido inicializada\n";
+                throw;
+            }
+            if (var->second.type == 0) {
+                std::cerr << "no se puede efectuar operaciones con chars\n";
+                throw;
+            }
+        } else {
+            cout << expr1->toString(ctx) << " no existe\n";
+            throw;
+        }
+    }
+}
 
 %node AddExpr BinExpr
 %node SubExpr BinExpr
@@ -182,66 +230,82 @@ toString(IdenExpr) { return var_name; }
 toString(NumExpr) { return std::to_string(value); }
 
 toString(AddExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " + " + expr2->toString(ctx);
 }
 
 toString(SubExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " - " + expr2->toString(ctx);
 }
 
 toString(MulExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " * " + expr2->toString(ctx);
 }
 
 toString(PowExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " ^ " + expr2->toString(ctx);
 }
 
 toString(DivExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " div " + expr2->toString(ctx);
 }
 
 toString(ModExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " mod " + expr2->toString(ctx);
 }
 
 toString(EquExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " = " + expr2->toString(ctx);
 }
 
 toString(NeqExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " <> " + expr2->toString(ctx);
 }
 
 toString(GrtExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " > " + expr2->toString(ctx);
 }
 
 toString(LsrExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " < " + expr2->toString(ctx);
 }
 
 toString(GeqExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " >= " + expr2->toString(ctx);
 }
 
 toString(LeqExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " <= " + expr2->toString(ctx);
 }
 
 toString(OrExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " o " + expr2->toString(ctx);
 }
 
 toString(AndExpr) {
+    checkVars(ctx);
     return expr1->toString(ctx) + " y " + expr2->toString(ctx);
 }
 
 toString(NotExpr) {
+    checkVars(ctx);
     return "no " + expr->toString(ctx);
 }
 
 toString(NegExpr) {
+    checkVars(ctx);
     return "-" + expr->toString(ctx);
 }
 
@@ -267,11 +331,11 @@ toString(assignStmt) {
         throw;
     }
     else if (ctx.vars.find(var_name)->second.type == 0) {
-        cout <<  "fui declarado como caracter\n";
         CharExpr *ce = dynamic_cast<CharExpr*>(expr);
-        if (ce != 0)
+        if (ce != 0) {
             ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
-        else {
+            ctx.vars.find(var_name)->second.init = true;
+        } else {
             cout << "can't assign " + expr->toString(ctx) + " to char\n";
             throw;
         }
