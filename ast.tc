@@ -243,6 +243,8 @@ toString(NumExpr) { return to_string(value); }
 
 toString(AddExpr) {
     checkVars(ctx);
+    CFGStmtPair expr = toCFG(ctx);
+    //expr.first->toString();
     return expr1->toString(ctx) + " + " + expr2->toString(ctx);
 }
 
@@ -492,8 +494,11 @@ toCFG(AddExpr) {
     CFGStmtPair op2 = expr2->toCFG(ctx);
 
     place = cfg.CFGLhsCreate(ctx.getTemp());
+    cout << "place " << ((CFGLhs*)place)->id << '\n';
 
     CFGAddExpr *expr = cfg.CFGAddExprCreate(expr1->place, expr2->place);
+    cout << "place1 " << to_string(((CFGNumOper*)expr1->place)->value) << '\n';
+    cout << "place2 " << to_string(((CFGNumOper*)expr2->place)->value) << '\n';
 
     CFGStmt *stmt = cfg.CFGAssignCreate(place, expr);
 
@@ -560,11 +565,15 @@ toCFG(NotExpr) {
 }
 
 toCFG(NumExpr) {
-
+    place = cfg.CFGNumOperCreate(value);
+    CFGNop *nop = cfg.CFGNopCreate();
+    return CFGStmtPair(nop, nop);
 }
 
 toCFG(IdenExpr) {
-
+    place = cfg.CFGLhsCreate(var_name);
+    CFGNop *nop = cfg.CFGNopCreate();
+    return CFGStmtPair(nop, nop);
 }
 
 toCFG(BlockExpr) {

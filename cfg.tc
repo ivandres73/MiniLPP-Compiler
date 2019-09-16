@@ -41,7 +41,9 @@
 %node CFGAndExpr CFGBinExpr
 
 %node CFGOperand CFGExpr %abstract
-%node CFGNumOper CFGOperand
+%node CFGNumOper CFGOperand = {
+    int value;
+}
 %node CFGStackOp CFGOperand
 %node CFGLhs CFGOperand = {
     string id;
@@ -63,7 +65,8 @@ setNext(CFGStmt) {
 %operation %virtual string toString(CFGNode *this)
 
 toString(CFGAddExpr) {
-
+    //cout << op1->toString() + " + ";
+    //cout << op2->toString();
 }
 
 toString(CFGSubExpr) {
@@ -127,7 +130,7 @@ toString(CFGStackOp) {
 }
 
 toString(CFGAssign) {
-
+    cout << "assign\n";
 }
 
 toString(CFGNop) {
