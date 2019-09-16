@@ -1,8 +1,16 @@
 %option lang = "C++"
 %option state_type = "CFGNodeType"
+%option reentrant
 
 %decls %{
+    #include <string>
+    #include <iostream>
 
+    using std::string;
+    using std::cout;
+
+    //class CFGStmt;
+    //using CFGStmtPair = std::pair<CFGStmt*, CFGStmt*>;
 %}
 
 %{
@@ -13,7 +21,10 @@
 
 %node CFGExpr CFGNode %abstract
 
-%node CFGBinExpr CFGExpr %abstract
+%node CFGBinExpr CFGExpr %abstract = {
+    CFGOperand *op1;
+    CFGOperand *op2;
+}
 %node CFGAddExpr CFGBinExpr
 %node CFGSubExpr CFGBinExpr
 %node CFGMulExpr CFGBinExpr
@@ -30,5 +41,99 @@
 %node CFGAndExpr CFGBinExpr
 
 %node CFGOperand CFGExpr %abstract
-%node CFGNumOper CFGExpr
-%node CFGStackOp CFGExpr
+%node CFGNumOper CFGOperand
+%node CFGStackOp CFGOperand
+%node CFGLhs CFGOperand = {
+    string id;
+}
+
+%node CFGStmt CFGNode %abstract = {
+    %nocreate CFGStmt *next = {nullptr};
+}
+%operation %virtual void setNext(CFGStmt *this, CFGStmt* n)
+setNext(CFGStmt) {
+    next = n;
+}
+%node CFGAssign CFGStmt = {
+    CFGOperand *var;
+    CFGExpr *ex;
+}
+%node CFGNop CFGStmt
+
+%operation %virtual string toString(CFGNode *this)
+
+toString(CFGAddExpr) {
+
+}
+
+toString(CFGSubExpr) {
+
+}
+
+toString(CFGMulExpr) {
+
+}
+
+toString(CFGPowExpr) {
+
+}
+
+toString(CFGDivExpr) {
+
+}
+
+toString(CFGModExpr) {
+
+}
+
+toString(CFGEquExpr) {
+
+}
+
+toString(CFGNeqExpr) {
+
+}
+
+toString(CFGGrtExpr) {
+
+}
+
+toString(CFGLsrExpr) {
+
+}
+
+toString(CFGGeqExpr) {
+
+}
+
+toString(CFGLeqExpr) {
+
+}
+
+toString(CFGOrExpr ) {
+
+}
+
+toString(CFGAndExpr) {
+
+}
+
+toString(CFGNumOper) {
+
+}
+
+toString(CFGStackOp) {
+
+}
+
+toString(CFGAssign) {
+
+}
+
+toString(CFGNop) {
+
+}
+
+toString(CFGLhs) {
+
+}

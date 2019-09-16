@@ -3,6 +3,8 @@
 %{
     #include "ast.h"
     #include "cfg.h"
+
+    CFGNodeType cfg;
 %}
 
 %decls %{
@@ -25,6 +27,12 @@
     class ifStmt;
     using ifStmtList = vector<ifStmt*>;
 
+    class CFGOperand;
+    class CFGStmt;
+    using CFGStmtPair = std::pair<CFGStmt*, CFGStmt*>;
+
+    using std::to_string;
+
     union val {
         char car;
         bool boo;
@@ -41,13 +49,17 @@
 
     struct Context {
         std::unordered_map<string, val_info> vars;
+        int offset = 0;
+        string getTemp() { return "t" + to_string(offset); }
     };
 
     class Statement;
     using StmtList = list<Statement*>;
 %}
 
-%node ASTNode %abstract %typedef
+%node ASTNode %abstract %typedef = {
+    %nocreate CFGOperand* place;
+}
 
 %node Expr ASTNode %abstract
 
@@ -227,7 +239,7 @@ getString(StringExpr) { return value; }
 getChar(CharExpr) { return value; }
 getBool(BoolExpr) { return value; }
 toString(IdenExpr) { return var_name; }
-toString(NumExpr) { return std::to_string(value); }
+toString(NumExpr) { return to_string(value); }
 
 toString(AddExpr) {
     checkVars(ctx);
@@ -469,4 +481,108 @@ toString(declStmt) {
         
     }
     return s;
+}
+
+/*** TO CFG ***/
+
+%operation %virtual CFGStmtPair toCFG(Expr *this, Context& ctx)
+
+toCFG(AddExpr) {
+    CFGStmtPair op1 = expr1->toCFG(ctx);
+    CFGStmtPair op2 = expr2->toCFG(ctx);
+
+    place = cfg.CFGLhsCreate(ctx.getTemp());
+
+    CFGAddExpr *expr = cfg.CFGAddExprCreate(expr1->place, expr2->place);
+
+    CFGStmt *stmt = cfg.CFGAssignCreate(place, expr);
+
+    op1.second->setNext(op2.first);
+    op2.second->setNext(stmt);
+
+    return CFGStmtPair(op1.first, stmt);
+}
+
+toCFG(SubExpr) {
+
+}
+
+toCFG(MulExpr) {
+
+}
+
+toCFG(PowExpr) {
+
+}
+
+toCFG(DivExpr) {
+
+}
+
+toCFG(ModExpr) {
+
+}
+
+toCFG(EquExpr) {
+
+}
+
+toCFG(NeqExpr) {
+
+}
+
+toCFG(GrtExpr) {
+
+}
+
+toCFG(LsrExpr) {
+
+}
+
+toCFG(GeqExpr) {
+
+}
+
+toCFG(LeqExpr) {
+
+}
+
+toCFG(OrExpr ) {
+
+}
+
+toCFG(AndExpr) {
+
+}
+
+toCFG(NotExpr) {
+
+}
+
+toCFG(NumExpr) {
+
+}
+
+toCFG(IdenExpr) {
+
+}
+
+toCFG(BlockExpr) {
+
+}
+
+toCFG(StringExpr) {
+
+}
+
+toCFG(CharExpr) {
+
+}
+
+toCFG(BoolExpr) {
+
+}
+
+toCFG(NegExpr) {
+
 }
