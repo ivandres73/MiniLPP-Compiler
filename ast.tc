@@ -18,6 +18,7 @@
 
     using std::list;
     using std::cout;
+    using std::cerr;
     using std::string;
     using std::vector;
 
@@ -74,7 +75,7 @@ checkVars(BinExpr) {
     CharExpr *c1 = dynamic_cast<CharExpr*>(expr1);
     CharExpr *c2 = dynamic_cast<CharExpr*>(expr2);
     if (c1 != 0 || c2 != 0) {
-        std::cerr << "no se puede efectuar operaciones con chars\n";
+        cerr << "no se puede efectuar operaciones con chars\n";
         throw;
     }
 
@@ -86,15 +87,15 @@ checkVars(BinExpr) {
         std::unordered_map<string, val_info>::const_iterator var = ctx.vars.find(name);
         if (var != ctx.vars.end()) {
             if (!var->second.init) {
-                cout << name << " no ha sido inicializada\n";
+                cerr << name << " no ha sido inicializada\n";
                 throw;
             }
             if (var->second.type == 0) {
-                std::cerr << "no se puede efectuar operaciones con chars\n";
+                cerr << "no se puede efectuar operaciones con chars\n";
                 throw;
             }
         } else {
-            cout << expr1->toString(ctx) << " no existe\n";
+            cerr << expr1->toString(ctx) << " no existe\n";
             throw;
         }
     }
@@ -104,15 +105,15 @@ checkVars(BinExpr) {
         std::unordered_map<string, val_info>::const_iterator var = ctx.vars.find(name);
         if (var != ctx.vars.end()) {
             if (!var->second.init) {
-                cout << name << " no ha sido inicializada\n";
+                cerr << name << " no ha sido inicializada\n";
                 throw;
             }
             if (var->second.type == 0) {
-                std::cerr << "no se puede efectuar operaciones con chars\n";
+                cerr << "no se puede efectuar operaciones con chars\n";
                 throw;
             }
         } else {
-            cout << expr1->toString(ctx) << " no existe\n";
+            cerr << expr1->toString(ctx) << " no existe\n";
             throw;
         }
     }
@@ -243,7 +244,7 @@ toString(NumExpr) { return to_string(value); }
 
 toString(AddExpr) {
     checkVars(ctx);
-    CFGStmtPair expr = toCFG(ctx);
+    //CFGStmtPair expr = toCFG(ctx);
     //expr.first->toString();
     return expr1->toString(ctx) + " + " + expr2->toString(ctx);
 }
@@ -339,7 +340,7 @@ toString(printStmt) {
 
 toString(assignStmt) {
     if (ctx.vars.find(var_name) == ctx.vars.end()) {
-        std::cerr << "variable " + var_name + " no existe\n";
+        cerr << "variable " + var_name + " no existe\n";
         throw;
     }
     else if (ctx.vars.find(var_name)->second.type == 0) {
@@ -348,7 +349,7 @@ toString(assignStmt) {
             ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
             ctx.vars.find(var_name)->second.init = true;
         } else {
-            cout << "can't assign " + expr->toString(ctx) + " to char\n";
+            cerr << "can't assign " + expr->toString(ctx) + " to char\n";
             throw;
         }
     } else if (ctx.vars.find(var_name)->second.type == 2) {
@@ -357,7 +358,7 @@ toString(assignStmt) {
             //ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
             ctx.vars.find(var_name)->second.init = true;
         } else {
-            cout << "can't assign '" + expr->toString(ctx) + "' to int\n";
+            cerr << "can't assign '" + expr->toString(ctx) + "' to int\n";
             throw;
         }
     } else if (ctx.vars.find(var_name)->second.type == 1) {
@@ -366,7 +367,7 @@ toString(assignStmt) {
             //ctx.vars.find(var_name)->second.value.car = expr->toString(ctx)[0];
             ctx.vars.find(var_name)->second.init = true;
         } else {
-            cout << "can't assign '" + expr->toString(ctx) + "' to boolean\n";
+            cerr << "can't assign '" + expr->toString(ctx) + "' to boolean\n";
             throw;
         }
     }
@@ -478,7 +479,7 @@ toString(declStmt) {
             ctx.vars.emplace(curr_var, info);
         } else
         {
-            cout << curr_var << " ya existe\n";
+            cerr << curr_var << " ya existe\n";
         }
         
     }
@@ -487,7 +488,7 @@ toString(declStmt) {
 
 /*** TO CFG ***/
 
-%operation %virtual CFGStmtPair toCFG(Expr *this, Context& ctx)
+%operation %virtual CFGStmtPair toCFG(ASTNode *this, Context& ctx)
 
 toCFG(AddExpr) {
     CFGStmtPair op1 = expr1->toCFG(ctx);
@@ -504,6 +505,8 @@ toCFG(AddExpr) {
 
     op1.second->setNext(op2.first);
     op2.second->setNext(stmt);
+
+    op1.first->toString();
 
     return CFGStmtPair(op1.first, stmt);
 }
@@ -577,7 +580,9 @@ toCFG(IdenExpr) {
 }
 
 toCFG(BlockExpr) {
-
+    for (auto i : list) {
+        i->toCFG(ctx);
+    }
 }
 
 toCFG(StringExpr) {
@@ -594,4 +599,55 @@ toCFG(BoolExpr) {
 
 toCFG(NegExpr) {
 
+}
+
+toCFG(BlockStmt) {
+    for (auto i : list) {
+        i->toCFG(ctx);
+    }
+}
+
+toCFG(printStmt) {
+
+}
+
+toCFG(assignStmt) {
+    cout << "asign stmt\n";
+    expr->toCFG(ctx);
+}
+
+toCFG(ifStmt) {
+
+}
+
+toCFG(elseifBlock) {
+
+}
+
+toCFG(returnStmt) {
+
+}
+
+toCFG(readStmt) {
+
+}
+
+toCFG(callStmt) {
+
+}
+
+toCFG(whileStmt) {
+
+}
+
+toCFG(doStmt) {
+
+}
+
+toCFG(forStmt) {
+
+}
+
+toCFG(declStmt) {
+    cout << "declStmt\n";
 }

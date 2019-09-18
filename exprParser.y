@@ -100,7 +100,9 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         if ($3 != nullptr) b->addStmt((BlockStmt*)$3);
         b->addStmt((Statement*)$8);
         $$ = b;
-        cout << b->toString(ctx); }
+        cout << b->toString(ctx); 
+        cout << "***cfg***\n";
+        b->toCFG(ctx); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL
