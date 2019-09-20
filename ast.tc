@@ -602,8 +602,17 @@ toCFG(NegExpr) {
 }
 
 toCFG(BlockStmt) {
+    CFGNop *nop = cfg.CFGNopCreate();
+    CFGStmtPair p(nop, nop);
     for (auto i : list) {
-        i->toCFG(ctx);
+        CFGStmtPair it = i->toCFG(ctx);
+        if (i == list.front()) {
+            cout << "soyez primer\n";
+            p.first = it.first;
+        }
+        if (i == list.back()) {
+            cout << "soy el ultimo\n";
+        }
     }
 }
 
@@ -613,7 +622,18 @@ toCFG(printStmt) {
 
 toCFG(assignStmt) {
     cout << "asign stmt\n";
-    expr->toCFG(ctx);
+
+    CFGStmtPair e = expr->toCFG(ctx);
+
+    place = cfg.CFGLhsCreate(var_name);
+
+    CFGExpr* result = cfg.CFGLhsCreate(expr->place->toString());
+
+    CFGStmt *stmt = cfg.CFGAssignCreate(place, result);
+
+    stmt->setNext(e.first);
+
+    return CFGStmtPair(stmt, e.second);
 }
 
 toCFG(ifStmt) {
@@ -650,4 +670,6 @@ toCFG(forStmt) {
 
 toCFG(declStmt) {
     cout << "declStmt\n";
+    CFGNop *nop = cfg.CFGNopCreate();
+    return CFGStmtPair(nop, nop);
 }

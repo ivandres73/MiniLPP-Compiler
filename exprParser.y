@@ -6,6 +6,7 @@
 
 %{
     #include "../exprLexer.h"
+    #include "../x86.h"
 
     int yylex();
     string getText();
@@ -98,11 +99,12 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         StmtList l;
         BlockStmt *b = new BlockStmt(l);
         if ($3 != nullptr) b->addStmt((BlockStmt*)$3);
-        b->addStmt((Statement*)$8);
+        if ($8 != nullptr) b->addStmt((Statement*)$8);
         $$ = b;
-        cout << b->toString(ctx); 
+        cout << b->toString(ctx);
         cout << "***cfg***\n";
-        b->toCFG(ctx); }
+        CFGStmtPair p = b->toCFG(ctx);
+        x86::printCFG(p.first); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL

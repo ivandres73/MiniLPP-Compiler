@@ -7,6 +7,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # Run treecc to generate the CFG
 add_custom_command (
+  PRE_BUILD
   OUTPUT cfg.cpp cfg.h
   COMMAND treecc -o cfg.cpp -h cfg.h ${PROJECT_SOURCE_DIR}/cfg.tc
   MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/cfg.tc
@@ -36,6 +37,7 @@ add_custom_command (
 add_executable(${PROJECT_NAME}
   #main.cpp
   exprParser.cpp
+  x86.cpp
   ast.cpp
   cfg.cpp
   exprLexer.cpp
