@@ -619,7 +619,6 @@ toCFG(BlockStmt) {
         CFGStmtPair stmt1 = (*it1)->toCFG(ctx);
         if (flag) {
             p.first = stmt1.first;
-            //cout << "seteado\n";
             flag = false;
         }
         if (it2 != list.end() && it2 != it1) {
@@ -641,6 +640,23 @@ toCFG(printStmt) {
             str = cfg.CFGLhsCreate(i->toString(ctx));
             param = cfg.CFGParamStmtCreate(str);
         }
+        IdenExpr *ie = dynamic_cast<IdenExpr*>(i);
+        if (ie != 0) {
+            string var = ie->toString(ctx);
+            if (ctx.vars.find(var) != ctx.vars.end()) {
+                val_info v = ctx.vars.find(var)->second;
+                if (v.type == 0) {//si es char
+                    cout << "es char\n";
+                    ctx.insertToStrTable("%c");
+                    str = cfg.CFGLhsCreate(i->toString(ctx));
+                    param = cfg.CFGParamStmtCreate(str);
+                } else if (v.type == 1) {//si es bool
+
+                } else {//si es num
+
+                }
+            }
+        }
     }
     int paramCount = args->list.size();
     CFGStmt *call = cfg.CFGCallStmtCreate("printf", paramCount);
@@ -650,6 +666,7 @@ toCFG(printStmt) {
 }
 
 toCFG(assignStmt) {
+    cout << "assign stmt\n";
     CFGStmtPair e = expr->toCFG(ctx);
 
     place = cfg.CFGLhsCreate(var_name);
@@ -657,7 +674,7 @@ toCFG(assignStmt) {
     CFGStmt *stmt = cfg.CFGAssignCreate(place, expr->place);
     e.second->setNext(stmt);
     //cout << "expr = " << e.second->toString();
-    cout << CFGToString(e.first);
+    //cout << CFGToString(e.first);
 
     return CFGStmtPair(stmt, stmt);
 }
