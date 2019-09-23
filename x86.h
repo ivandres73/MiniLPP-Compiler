@@ -1,10 +1,9 @@
-#include <iostream>
 #include "build/cfg.h"
+#include <fstream>
 
-using std::cout;
+using std::ofstream;
 
 class x86 {
-
     public:
-        static void printCFG(CFGStmt*);
+        string CFGtox86(CFGStmt *root, Context&);
 };

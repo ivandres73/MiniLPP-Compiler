@@ -6,6 +6,7 @@
 
 %{
     #include "../exprLexer.h"
+    #include "../expr_cfg_alg.cpp"
     #include "../x86.h"
 
     int yylex();
@@ -93,7 +94,7 @@
 
 %%
 
-PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS FIN OPT_EOL
+PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_EOL STATEMENTS OPT_EOL FIN OPT_EOL
     {
         Context ctx;
         StmtList l;
@@ -101,10 +102,15 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         if ($3 != nullptr) b->addStmt((BlockStmt*)$3);
         if ($8 != nullptr) b->addStmt((Statement*)$8);
         $$ = b;
-        cout << b->toString(ctx);
+        //cout << b->toString(ctx);
         cout << "***cfg***\n";
         CFGStmtPair p = b->toCFG(ctx);
-        x86::printCFG(p.first); }
+        CFGStmt *stmt = CFGRemoveNops(p.first);
+        CFGSetLabels(stmt);
+        cout << CFGToString(stmt); 
+        cout << "*****x86****\n";
+        x86 x;
+        cout << x.CFGtox86(stmt, ctx); }
     ;
 
 SUBTYPES-SEC: SUBTYPE-DECL

@@ -50,7 +50,21 @@
 
     struct Context {
         std::unordered_map<string, val_info> vars;
+        std::unordered_map<string, string> strTable;
+        int strCount = 0;
         int offset = 0;
+        void insertToStrTable(string value) {
+            if (strTable.find(value) == strTable.end()) {
+                strTable.emplace(value, "SL" + to_string(strCount++));
+            }
+        }
+        string getLabelfromStrTable(string value) {
+            if (strTable.find(value) != strTable.end()) {
+                return strTable.find(value)->second;
+            }
+            cerr << "string literal not found\n";
+            throw "error";
+        }
         string getTemp() { return "t" + to_string(offset); }
     };
 
@@ -244,8 +258,6 @@ toString(NumExpr) { return to_string(value); }
 
 toString(AddExpr) {
     checkVars(ctx);
-    //CFGStmtPair expr = toCFG(ctx);
-    //expr.first->toString();
     return expr1->toString(ctx) + " + " + expr2->toString(ctx);
 }
 
@@ -495,19 +507,14 @@ toCFG(AddExpr) {
     CFGStmtPair op2 = expr2->toCFG(ctx);
 
     place = cfg.CFGLhsCreate(ctx.getTemp());
-    cout << "place " << ((CFGLhs*)place)->id << '\n';
 
-    CFGAddExpr *expr = cfg.CFGAddExprCreate(expr1->place, expr2->place);
-    cout << "place1 " << to_string(((CFGNumOper*)expr1->place)->value) << '\n';
-    cout << "place2 " << to_string(((CFGNumOper*)expr2->place)->value) << '\n';
+    CFGExpr *expr = cfg.CFGAddExprCreate(expr1->place, expr2->place);
 
     CFGStmt *stmt = cfg.CFGAssignCreate(place, expr);
 
     op1.second->setNext(op2.first);
     op2.second->setNext(stmt);
-
-    op1.first->toString();
-
+    
     return CFGStmtPair(op1.first, stmt);
 }
 
@@ -604,36 +611,55 @@ toCFG(NegExpr) {
 toCFG(BlockStmt) {
     CFGNop *nop = cfg.CFGNopCreate();
     CFGStmtPair p(nop, nop);
-    for (auto i : list) {
-        CFGStmtPair it = i->toCFG(ctx);
-        if (i == list.front()) {
-            cout << "soyez primer\n";
-            p.first = it.first;
+    std::list<Statement*>::iterator it1 = list.begin();
+    std::list<Statement*>::iterator it2 = list.begin();
+    it2++;
+    bool flag = true;
+    for (; it1 != list.end(); it1++) {
+        CFGStmtPair stmt1 = (*it1)->toCFG(ctx);
+        if (flag) {
+            p.first = stmt1.first;
+            //cout << "seteado\n";
+            flag = false;
         }
-        if (i == list.back()) {
-            cout << "soy el ultimo\n";
+        if (it2 != list.end() && it2 != it1) {
+            CFGStmtPair stmt2 = (*it2)->toCFG(ctx);
+            stmt1.second->setNext(stmt2.first);
         }
+        it2++;
     }
+    return p;
 }
 
 toCFG(printStmt) {
+    CFGStmt *param;
+    CFGOperand *str;
+    for (auto i : args->list) {
+        StringExpr *se = dynamic_cast<StringExpr*>(i);
+        if (se != 0) {
+            ctx.insertToStrTable(i->toString(ctx));
+            str = cfg.CFGLhsCreate(i->toString(ctx));
+            param = cfg.CFGParamStmtCreate(str);
+        }
+    }
+    int paramCount = args->list.size();
+    CFGStmt *call = cfg.CFGCallStmtCreate("printf", paramCount);
+    param->setNext(call);
 
+    return CFGStmtPair(param, call);
 }
 
 toCFG(assignStmt) {
-    cout << "asign stmt\n";
-
     CFGStmtPair e = expr->toCFG(ctx);
 
     place = cfg.CFGLhsCreate(var_name);
 
-    CFGExpr* result = cfg.CFGLhsCreate(expr->place->toString());
+    CFGStmt *stmt = cfg.CFGAssignCreate(place, expr->place);
+    e.second->setNext(stmt);
+    //cout << "expr = " << e.second->toString();
+    cout << CFGToString(e.first);
 
-    CFGStmt *stmt = cfg.CFGAssignCreate(place, result);
-
-    stmt->setNext(e.first);
-
-    return CFGStmtPair(stmt, e.second);
+    return CFGStmtPair(stmt, stmt);
 }
 
 toCFG(ifStmt) {
@@ -669,7 +695,6 @@ toCFG(forStmt) {
 }
 
 toCFG(declStmt) {
-    cout << "declStmt\n";
     CFGNop *nop = cfg.CFGNopCreate();
     return CFGStmtPair(nop, nop);
 }
