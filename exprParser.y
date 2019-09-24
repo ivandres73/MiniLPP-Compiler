@@ -17,7 +17,7 @@
 
     #define YYERROR_VERBOSE 1
     void yyerror(const char *msg) {
-        cout << filename << ":" << getLine() << ": " << msg << '\n';
+        cout << ";" << filename << ":" << getLine() << ": " << msg << '\n';
     }
 
 %}
@@ -102,13 +102,13 @@ PROGRAM: SUBTYPES-SEC OPT_EOL VARIABLE-SEC OPT_EOL SUBPROGRAM-DECL kwInicio OPT_
         if ($3 != nullptr) b->addStmt((BlockStmt*)$3);
         if ($8 != nullptr) b->addStmt((Statement*)$8);
         $$ = b;
-        cout << b->toString(ctx);
-        cout << "***cfg***\n";
+        b->toString(ctx);
+        "***cfg***\n";
         CFGStmtPair p = b->toCFG(ctx);
         CFGStmt *stmt = CFGRemoveNops(p.first);
         CFGSetLabels(stmt);
-        cout << CFGToString(stmt); 
-        cout << "*****x86****\n";
+        CFGToString(stmt); 
+        "*****x86****\n";
         x86 x;
         cout << x.CFGtox86(stmt, ctx); }
     ;
